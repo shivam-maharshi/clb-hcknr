@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID" version="2.5">
-  <display-name>YouTube</display-name>
+  <display-name>snip</display-name>
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>
@@ -10,9 +10,9 @@
   </context-param>
   <servlet>
     <description></description>
-    <display-name>FirstServlet</display-name>
-    <servlet-name>FirstServlet</servlet-name>
-    <servlet-class>org.vt.edu.FirstServlet</servlet-class>
+    <display-name>DataServlet</display-name>
+    <servlet-name>DataServlet</servlet-name>
+    <servlet-class>snip.api.DataApi</servlet-class>
     <init-param>
       <param-name>city</param-name>
       <param-value>Bangalore</param-value>
@@ -23,7 +23,7 @@
     </init-param>
   </servlet>
   <servlet-mapping>
-    <servlet-name>FirstServlet</servlet-name>
-    <url-pattern>/first.html</url-pattern>
+    <servlet-name>DataServlet</servlet-name>
+    <url-pattern>/data</url-pattern>
   </servlet-mapping>
 </web-app>
