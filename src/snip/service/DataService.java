@@ -1,7 +1,11 @@
 package snip.service;
 
+import java.util.List;
+
+import com.github.jreddit.entity.Submission;
 import com.google.api.services.youtube.model.SearchResult;
 
+import snip.adapter.RedditAdapter;
 import snip.adapter.TwitterAdapter;
 import snip.adapter.YouTubeAdapter;
 import snip.pojo.YTVideoInfo;
@@ -17,6 +21,7 @@ import twitter4j.Status;
 public class DataService {
 	YouTubeAdapter yta = new YouTubeAdapter();
 	TwitterAdapter ta = new TwitterAdapter();
+	RedditAdapter ra = new RedditAdapter();
 
 	public Object getData(String videoId) {
 		// Fetch data from YouTube.
@@ -27,11 +32,12 @@ public class DataService {
 			System.out.println("@" + status.getUser().getScreenName() + ":" + status.getText() + " : "
 					+ status.getRetweetCount() + " : " + status.getCreatedAt());
 		}
-		// Fetch data from Facebook.
-		// Fetch data from LinkedIn.
-		// Fetch data from Quora.
-		// Fetch data from StackOverFlow.
-		// Fetch data from Wikipedia.
+		// Fetch data from Reddit.
+		List<Submission> submissions = getDataFromReddit(vInfo);
+		for (Submission s : submissions) {
+			System.out.println(s.getAuthor() + ":" + s.getPermalink() + " : " + s.getSelftext() + " : " + s.getURL()
+					+ " : " + s.getTitle() + " : " + s.getCreatedUTC() + " : " + s.getUrl());
+		}
 		return null;
 	}
 
@@ -55,8 +61,11 @@ public class DataService {
 		return result;
 	}
 
-	private Object getDataFromFacebook(String keyword) {
-		return null;
+	private List<Submission> getDataFromReddit(YTVideoInfo vInfo) {
+		StringBuilder sb = new StringBuilder();
+		// VideoId inclusion search precision.
+		sb.append(vInfo.getTitle()).append(" ").append(vInfo.getChannel());
+		return ra.getData(sb.toString());
 	}
 
 	private Object getDataFromLinkedIn(String keyword) {
