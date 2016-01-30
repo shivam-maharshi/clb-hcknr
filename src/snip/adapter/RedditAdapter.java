@@ -9,6 +9,11 @@ import com.github.jreddit.retrieval.params.SubmissionSort;
 import com.github.jreddit.utils.restclient.PoliteHttpRestClient;
 import com.github.jreddit.utils.restclient.RestClient;
 
+/**
+ * Provides functionality to access Reddit APIs using jReddit library.
+ * 
+ * @author shivam.maharshi
+ */
 public class RedditAdapter {
 
 	public List<Submission> getData(String keyword) {

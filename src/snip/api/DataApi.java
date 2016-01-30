@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import snip.pojo.Data;
 import snip.service.DataService;
 import snip.utils.OutputFormatter;
 
@@ -33,7 +34,7 @@ public class DataApi extends HttpServlet {
 			throws ServletException, IOException {
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
-		Object data = dataService.getData(request.getParameter("v"));
+		Data data = dataService.getData(request.getParameter("v"));
 		out.print(outputFormatter.format(data));
 		out.close();
 	}

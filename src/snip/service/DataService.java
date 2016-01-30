@@ -1,5 +1,6 @@
 package snip.service;
 
+import java.util.Date;
 import java.util.List;
 
 import com.github.jreddit.entity.Submission;
@@ -8,6 +9,9 @@ import com.google.api.services.youtube.model.SearchResult;
 import snip.adapter.RedditAdapter;
 import snip.adapter.TwitterAdapter;
 import snip.adapter.YouTubeAdapter;
+import snip.pojo.Data;
+import snip.pojo.RedditData;
+import snip.pojo.TwitterData;
 import snip.pojo.YTVideoInfo;
 import twitter4j.QueryResult;
 import twitter4j.Status;
@@ -23,22 +27,36 @@ public class DataService {
 	TwitterAdapter ta = new TwitterAdapter();
 	RedditAdapter ra = new RedditAdapter();
 
-	public Object getData(String videoId) {
+	public Data getData(String videoId) {
 		// Fetch data from YouTube.
 		YTVideoInfo vInfo = map(videoId, getDataFromYouTube("v=" + videoId));
 		// Fetch data from Twitter.
 		QueryResult twitterData = getDataFromTwitter(vInfo);
-		for (Status status : twitterData.getTweets()) {
-			System.out.println("@" + status.getUser().getScreenName() + ":" + status.getText() + " : "
-					+ status.getRetweetCount() + " : " + status.getCreatedAt());
-		}
+		TwitterData[] td = map(twitterData);
 		// Fetch data from Reddit.
 		List<Submission> submissions = getDataFromReddit(vInfo);
-		for (Submission s : submissions) {
-			System.out.println(s.getAuthor() + ":" + s.getPermalink() + " : " + s.getSelftext() + " : " + s.getURL()
-					+ " : " + s.getTitle() + " : " + s.getCreatedUTC() + " : " + s.getUrl());
+		RedditData[] rd = map(submissions);
+		return new Data(td, rd);
+	}
+
+	private TwitterData[] map(QueryResult twitterData) {
+		TwitterData[] td = new TwitterData[10];
+		for (int i = 0; i < twitterData.getTweets().size() && i < 10; i++) {
+			Status status = twitterData.getTweets().get(i);
+			td[i] = new TwitterData("@" + status.getUser().getScreenName(), status.getText(),
+					status.getCreatedAt().toString());
 		}
-		return null;
+		return td;
+	}
+
+	private RedditData[] map(List<Submission> submissions) {
+		RedditData[] rd = new RedditData[10];
+		for (int i = 0; i < 10 && i < submissions.size(); i++) {
+			Submission s = submissions.get(i);
+			rd[i] = new RedditData(s.getAuthor(), s.getTitle(), new Date(s.getCreatedUTC().longValue()).toString(),
+					s.getPermalink());
+		}
+		return rd;
 	}
 
 	private YTVideoInfo map(String videoId, SearchResult sr) {
@@ -66,18 +84,6 @@ public class DataService {
 		// VideoId inclusion search precision.
 		sb.append(vInfo.getTitle()).append(" ").append(vInfo.getChannel());
 		return ra.getData(sb.toString());
-	}
-
-	private Object getDataFromLinkedIn(String keyword) {
-		return null;
-	}
-
-	private Object getDataFromStackOverFlow(String keyword) {
-		return null;
-	}
-
-	private Object getDataFromQuora(String keyword) {
-		return null;
 	}
 
 }
