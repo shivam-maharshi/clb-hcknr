@@ -1,0 +1,13 @@
+{
+	"name": "Youtube AdWords",
+	"version": "1.0",
+	"manifest_version": 2,
+	"permissions": [ "https://www.youtube.com/*", "http://localhost/*" ],
+	"content_scripts": [
+		{
+			"matches": [ "https://www.youtube.com/watch*" ],
+			"js": [ "bootstrap.js" ]
+		}
+	],
+	"web_accessible_resources": ["youtube.js"]
+}
