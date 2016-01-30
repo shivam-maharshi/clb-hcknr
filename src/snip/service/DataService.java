@@ -8,6 +8,12 @@ import snip.pojo.YTVideoInfo;
 import twitter4j.QueryResult;
 import twitter4j.Status;
 
+/**
+ * Provides singular service for fetching data from multiple social network end
+ * points.
+ * 
+ * @author shivam.maharshi
+ */
 public class DataService {
 	YouTubeAdapter yta = new YouTubeAdapter();
 	TwitterAdapter ta = new TwitterAdapter();

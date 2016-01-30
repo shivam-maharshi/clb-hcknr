@@ -11,6 +11,11 @@ import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
 
+/**
+ * Provides functionality to access YouTube APIs using Google Libraries.
+ * 
+ * @author shivam.maharshi
+ */
 public class YouTubeAdapter {
 
 	private static final long NUMBER_OF_VIDEOS_RETURNED = 1;

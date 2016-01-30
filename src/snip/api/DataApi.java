@@ -12,6 +12,11 @@ import javax.servlet.http.HttpServletResponse;
 import snip.service.DataService;
 import snip.utils.OutputFormatter;
 
+/**
+ * Web end point for social networks data integration services as Web APIs.
+ * 
+ * @author shivam.maharshi
+ */
 public class DataApi extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private DataService dataService = new DataService();

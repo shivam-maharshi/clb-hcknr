@@ -6,6 +6,11 @@ import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 
+/**
+ * Provides functionality to access Twitter APIs using Twitter4j library.
+ * 
+ * @author shivam.maharshi
+ */
 public class TwitterAdapter {
 
 	public QueryResult getData(String keyword) {

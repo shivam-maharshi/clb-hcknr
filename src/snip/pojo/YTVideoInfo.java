@@ -1,5 +1,11 @@
 package snip.pojo;
 
+/**
+ * Data holder class for consistency amongst service interfaces and easy data
+ * mapping.
+ * 
+ * @author shivam.maharshi
+ */
 public class YTVideoInfo {
 
 	private String videoId;
