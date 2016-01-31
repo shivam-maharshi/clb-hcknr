@@ -1,11 +1,29 @@
 
 // video query string = <?v=blablabla>
-var videoId = window.location.search;
+var video_id = window.location.search.split('v=')[1];
+var ampersandPosition = video_id.indexOf('&');
+if(ampersandPosition != -1) {
+  video_id = video_id.substring(0, ampersandPosition);
+}
+
+
+var loadInfo = function (video_id) {
+    var gdata = document.createElement("script");
+    gdata.src = "https://gdata.youtube.com/feeds/api/videos/" + video_id + "?v=2&alt=jsonc&callback=storeInfo";
+    var body = document.getElementsByTagName("body")[0];
+    body.appendChild(gdata);
+};
+
+var storeInfo = function (info) {
+    console.log(info.data.title);
+};
+
 var interval = 15;
 var player;
 // creates empty image next to the video
 function createAddImage() {
 	var container = document.getElementById('placeholder-playlist');
+player = player || document.getElementById('movie_player'); 
 	container.style.display = 'block';
 	container.innerHTML='<style>'+
 		'.div1 {'+
@@ -29,24 +47,29 @@ function createAddImage() {
 		'</div>'+
 		'<div class="div2" id="div2" >'+
 		'</div>';
+	  var xhr = new XMLHttpRequest();
+ 	    xhr.open('GET', 'http://10.128.128.142:8080/snip/data?v=EgqUJOudrcM');
+ 	   xhr.responseType = 'json';
 
-	var text = '{ "twitter" : [' +
-	'{ "name":"John" , "status":"First status" },' +
-	'{ "name":"Anna" , "status":"Second status" },' +
-	'{ "name":"Peter" , "status":"Third status" } ]}';
+	var text = xhr.response;
 	var obj = JSON.parse(text);
 	
 	var x;
 	for(x in obj.twitter){
-	    var comment1= obj.twitter[x].name + " " + obj.twitter[x].status;
+	   var comment1= obj.twitter[x].name + " " + obj.twitter[x].tweet;
 	    var newParagraph1 = document.createElement('p');
 	    newParagraph1.textContent = comment1;
 	    document.getElementById("div2").appendChild(newParagraph1);
-	    var comment2= " ";
-	    var newParagraph2 = document.createElement('p');
-	    newParagraph2.textContent = comment2;
-	    document.getElementById("div2").appendChild(newParagraph2);
+	  
 }
+
+	    var newParagraph2 = document.createElement('p');
+	    newParagraph2.textContent = video_id;
+	    document.getElementById("div2").appendChild(newParagraph2);
+
+	var newParagraph3 = document.createElement('p');
+	    newParagraph3.textContent = player.getVideoData().title;
+	    document.getElementById("div2").appendChild(newParagraph3);
 }
 // executes every <interval> seconds
 setInterval(function() {

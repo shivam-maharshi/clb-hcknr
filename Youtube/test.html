@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<p id="demo">A Paragraph.</p>
+<div id='twitterBlock'>
+</div>
+
+<button type="button" onclick="myFunction()">Try it</button>
+
+<script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+
+$(document).ready(function(){
+	$.ajax({
+		type: "GET",
+		url: "http://10.128.128.142:8080/snip/data?v=EgqUJOudrcM",
+		success: function(response) {
+			if (response && response.twitter) {
+				populateTweets(response.twitter);
+			}
+			
+		},
+		error: function() {
+		    console.log('Error!!')
+		}
+	    });
+
+	function populateTweets(tweets) {
+		for(var x in tweets) {
+			var tweet = $('p').html(tweets[x].name + ' ' + tweets[x].tweet);
+			$('#twitterBlock').append(tweet);		
+		}
+	}
+	
+});
+
+
+</script>
+
+</body>
+</html>
+
