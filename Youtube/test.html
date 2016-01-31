@@ -25,7 +25,7 @@ $(document).ready(function(){
 		error: function() {
 		    console.log('Error!!')
 		}
-	    });
+    });
 
 	function populateTweets(tweets) {
 		for(var x in tweets) {
@@ -33,6 +33,93 @@ $(document).ready(function(){
 			$('#twitterBlock').append(tweet);		
 		}
 	}
+
+    var response = {
+        "twitter": [
+            {
+                "name": "@drsamirbhatta",
+                "tweet": "https://t.co/PZVJO7LHyj How deep is your love...",
+                "date": "Sat Jan 30 21:42:08 EST 2016"
+            },
+            {
+                "name": "@banksxxcm",
+                "tweet": "I liked a @YouTube video https://t.co/ciT3mvb3KG Calvin Harris & Disciples - How Deep Is Your Love",
+                "date": "Sat Jan 30 21:37:01 EST 2016"
+            },
+            {
+                "name": "@charlenehildeb1",
+                "tweet": "Calvin Harris & Disciples - How Deep Is Your Love https://t.co/Qcksd6Mixx via @YouTube",
+                "date": "Sat Jan 30 21:34:10 EST 2016"
+            },
+            {
+                "name": "@Charjunsan",
+                "tweet": "Calvin Harris & Disciples - How Deep Is Your Love https://t.co/jx7IWPrJJZ vía @YouTube",
+                "date": "Sat Jan 30 21:09:48 EST 2016"
+            },
+            {
+                "name": "@AmoElRocks2",
+                "tweet": "Calvin Harris & Disciples - How Deep Is Your Love https://t.co/TmykEpPRc4 vía @YouTube",
+                "date": "Sat Jan 30 20:55:07 EST 2016"
+            },
+            {
+                "name": "@_Trackable",
+                "tweet": "I added a video to a @YouTube playlist https://t.co/9uqyk38agS Calvin Harris & Disciples - How Deep Is Your Love",
+                "date": "Sat Jan 30 20:32:01 EST 2016"
+            },
+            {
+                "name": "@KjartanAlvestad",
+                "tweet": "Calvin Harris & Disciples - How Deep Is Your Love \nhttps://t.co/UCTG2BLlsj",
+                "date": "Sat Jan 30 20:11:14 EST 2016"
+            },
+            {
+                "name": "@5HIsMyAngel",
+                "tweet": "RT @ZIPERATIVO: TOP SINGLES DA SEMANA ? ?\n\n? #29 Calvin Harris & Disciples - How Deep Is Your Love: https://t.co/wDHLI1TlXb https://t.co/vc?",
+                "date": "Sat Jan 30 19:04:17 EST 2016"
+            },
+            {
+                "name": "@FedericaDiSole",
+                "tweet": "RT @OndaNelCielo: E dove le Parole non arrivano...Calvin Harris & Disciples - How Deep Is Your Love https://t.co/pfhqNFltiq via @YouTube",
+                "date": "Sat Jan 30 18:13:40 EST 2016"
+            },
+            {
+                "name": "@PetaloDiLuna",
+                "tweet": "RT @OndaNelCielo: E dove le Parole non arrivano...Calvin Harris & Disciples - How Deep Is Your Love https://t.co/pfhqNFltiq via @YouTube",
+                "date": "Sat Jan 30 18:12:11 EST 2016"
+            }
+        ],
+        "reddit": [
+            {
+                "name": "Notonreddit117",
+                "title": "I don't know where else to say this to you, but here goes.",
+                "date": "Sat Jan 17 14:55:28 EST 1970",
+                "link": "/r/love/comments/43cn9n/i_dont_know_where_else_to_say_this_to_you_but/"
+            },
+            {
+                "name": "bladeovcain",
+                "title": "Ran into girl that i liked in high school five years ago earlier today. And it turns out she still likes me as well. (very lengthy story)",
+                "date": "Sat Jan 17 14:55:32 EST 1970",
+                "link": "/r/love/comments/43cv6g/ran_into_girl_that_i_liked_in_high_school_five/"
+            },
+            {
+                "name": "hopelessromantic7",
+                "title": "The subtle things",
+                "date": "Sat Jan 17 14:56:16 EST 1970",
+                "link": "/r/love/comments/43f2ac/the_subtle_things/"
+            },
+            {
+                "name": "kill_em_all90",
+                "title": "I love you with every fiber of my being",
+                "date": "Sat Jan 17 14:55:26 EST 1970",
+                "link": "/r/love/comments/43cjl0/i_love_you_with_every_fiber_of_my_being/"
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ]
+    };
 	
 });
 
