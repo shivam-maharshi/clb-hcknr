@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
+
 import snip.pojo.Data;
 import snip.service.DataService;
 import snip.utils.OutputFormatter;
@@ -21,7 +23,6 @@ import snip.utils.OutputFormatter;
 public class DataApi extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private DataService dataService = new DataService();
-	private OutputFormatter outputFormatter = new OutputFormatter();
 
 	public void init() {
 	}
@@ -32,10 +33,11 @@ public class DataApi extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		response.setContentType("text/html");
+		response.setContentType("application/json");
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		PrintWriter out = response.getWriter();
 		Data data = dataService.getData(request.getParameter("v"));
-		out.print(outputFormatter.format(data));
+		out.print(new Gson().toJson(data));
 		out.close();
 	}
 

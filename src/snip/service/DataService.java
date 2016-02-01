@@ -4,11 +4,9 @@ import java.util.Date;
 import java.util.List;
 
 import com.github.jreddit.entity.Submission;
-import com.google.api.services.youtube.model.SearchResult;
 
 import snip.adapter.RedditAdapter;
 import snip.adapter.TwitterAdapter;
-import snip.adapter.YouTubeAdapter;
 import snip.pojo.Data;
 import snip.pojo.RedditData;
 import snip.pojo.TwitterData;
@@ -23,14 +21,15 @@ import twitter4j.Status;
  * @author shivam.maharshi
  */
 public class DataService {
-	YouTubeAdapter yta = new YouTubeAdapter();
+	// YouTubeAdapter yta = new YouTubeAdapter();
 	TwitterAdapter ta = new TwitterAdapter();
 	RedditAdapter ra = new RedditAdapter();
 
 	public Data getData(String videoId) {
 		// Fetch data from YouTube.
-		YTVideoInfo vInfo = map(videoId, getDataFromYouTube("v=" + videoId));
+		// YTVideoInfo vInfo = map(videoId, getDataFromYouTube("v=" + videoId));
 		// Fetch data from Twitter.
+		YTVideoInfo vInfo = new YTVideoInfo(videoId, "CalvinHarrisVevo", "How Deep Is Your Love");
 		QueryResult twitterData = getDataFromTwitter(vInfo);
 		TwitterData[] td = map(twitterData);
 		// Fetch data from Reddit.
@@ -59,22 +58,23 @@ public class DataService {
 		return rd;
 	}
 
-	private YTVideoInfo map(String videoId, SearchResult sr) {
-		String channelName = sr.getSnippet().getChannelTitle();
-		if (channelName.endsWith("VEVO") || channelName.endsWith("vevo"))
-			// Fetch artist name. Improves search results.
-			channelName = channelName.substring(0, channelName.length() - 4);
-		YTVideoInfo vInfo = new YTVideoInfo(videoId, channelName, sr.getSnippet().getTitle());
-		return vInfo;
-	}
+	// private YTVideoInfo map(String videoId, SearchResult sr) {
+	// String channelName = sr.getSnippet().getChannelTitle();
+	// if (channelName.endsWith("VEVO") || channelName.endsWith("vevo"))
+	// // Fetch artist name. Improves search results.
+	// channelName = channelName.substring(0, channelName.length() - 4);
+	// YTVideoInfo vInfo = new YTVideoInfo(videoId, channelName,
+	// sr.getSnippet().getTitle());
+	// return vInfo;
+	// }
 
-	private SearchResult getDataFromYouTube(String videoId) {
-		return yta.getData(videoId);
-	}
+	// private SearchResult getDataFromYouTube(String videoId) {
+	// return yta.getData(videoId);
+	// }
 
 	private QueryResult getDataFromTwitter(YTVideoInfo vInfo) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(vInfo.getTitle()).append(" ").append(vInfo.getChannel()).append(" ").append(vInfo.getVideoId());
+		sb.append(vInfo.getTitle()).append(" ").append(vInfo.getVideoId());
 		QueryResult result = ta.getData(sb.toString());
 		return result;
 	}

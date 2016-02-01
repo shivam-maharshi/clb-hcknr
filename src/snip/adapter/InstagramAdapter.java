@@ -26,7 +26,7 @@ public class InstagramAdapter {
 //				.scope("comments").build();
 //		String authorizationUrl = service.getAuthorizationUrl(EMPTY_TOKEN);
 //		System.out.println(authorizationUrl);
-//		Verifier verifier = new Verifier("");
+//		Verifier verifier = new Verifier("c7acf080aad2482b9feb2c74932b26df");
 //		Token accessToken = service.getAccessToken(EMPTY_TOKEN, verifier);
 //		Instagram instagram = new Instagram(accessToken);
 //		String query = "snow";
