@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<indexer table="record"	 
+mapper="com.ngdata.hbaseindexer.morphline.MorphlineResultToSolrMapper">  <param name="morphlineFile"  value="/etc/hbase-­‐solr/conf/morphlines.conf"/>
+</indexer>
+
