@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # start Solr and listenning on port 8983 (default)
 # can specifiy a server directory: bin/solr start -d newServerDir
 bin/solr start -p 8983

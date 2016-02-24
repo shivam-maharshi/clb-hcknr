@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # search for all the documents for specific term: q=term
 curl http://localhost:8983/solr/gettingstarted/select?q=video
 # search for term in the specific field only: q=fieldname:term
