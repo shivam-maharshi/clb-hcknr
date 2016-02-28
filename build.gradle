@@ -3,13 +3,17 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 
-sourceCompatibility = 1.7
+sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    maven {
+        url 'http://repo.spring.io/libs-milestone/'
+    }
 }
 
 dependencies {
+    compile group: 'org.restlet.jee', name: 'org.restlet', version: '2.3.0'
     compile group: 'org.apache.solr', name: 'solr-core', version: '5.5.0'
     compile group: 'org.apache.hbase', name: 'hbase-client', version: '0.98.0-hadoop2'
 
