@@ -24,7 +24,7 @@ import java.io.IOException;
  * Author: dedocibula
  * Created on: 28.2.2016.
  */
-public class LuceneDemo {
+public class SimpleLuceneDemo {
     public static void main(String[] args) throws IOException, ParseException {
         // filters tokenizer with standard, lowercase and stopwords filters
         StandardAnalyzer analyzer = new StandardAnalyzer();
