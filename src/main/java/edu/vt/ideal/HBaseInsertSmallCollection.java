@@ -22,7 +22,7 @@ import java.util.Properties;
  * Author: dedocibula
  * Created on: 23.2.2016.
  */
-public class InsertSmallCollection {
+public class HBaseInsertSmallCollection {
     private static final String PROPERTY_FILENAME = "/ideal.properties";
     private static final String TABLE_NAME = "tweets_small";
     private static final String COLUMN_FAMILY = "raw";
@@ -50,7 +50,7 @@ public class InsertSmallCollection {
 
         // Loading properties from ideal.properties
         Properties props = new Properties();
-        try (InputStream stream = InsertSmallCollection.class.getResourceAsStream(PROPERTY_FILENAME)) {
+        try (InputStream stream = HBaseInsertSmallCollection.class.getResourceAsStream(PROPERTY_FILENAME)) {
             props.load(stream);
         }
 
