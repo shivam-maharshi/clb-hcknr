@@ -11,6 +11,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TrackingIndexWriter;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.Version;
 
 import java.io.IOException;
 
@@ -20,10 +21,10 @@ import java.io.IOException;
  */
 public class NRTLuceneDemo {
     public static void main(String[] args) throws IOException, InterruptedException {
-        StandardAnalyzer analyzer = new StandardAnalyzer();
+        StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44);
         RAMDirectory index = new RAMDirectory();
 
-        IndexWriterConfig config = new IndexWriterConfig(analyzer);
+        IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_44, analyzer);
         IndexWriter indexWriter = new IndexWriter(index, config);
 
         // tracks changes to delegated used by ControlledRealTimeReopenThread to ensure they are visible

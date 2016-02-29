@@ -11,9 +11,10 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.Version;
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.Scanner;
 
 /**
@@ -65,11 +66,11 @@ public class TextFileIndexerDemo {
         //=========================================================
         // Now search
         //=========================================================
-        IndexReader reader = DirectoryReader.open(FSDirectory.open(Paths.get(indexLocation)));
+        IndexReader reader = DirectoryReader.open(FSDirectory.open(new File(indexLocation)));
         IndexSearcher searcher = new IndexSearcher(reader);
 
         s = "";
-        StandardAnalyzer analyzer = new StandardAnalyzer();
+        StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44);
         while (!s.equalsIgnoreCase("q")) {
             try {
                 System.out.println("Enter the search query (q=quit):");
@@ -77,8 +78,8 @@ public class TextFileIndexerDemo {
                 if (s.equalsIgnoreCase("q")) {
                     break;
                 }
-                Query q = new QueryParser("contents", analyzer).parse(s);
-                TopScoreDocCollector collector = TopScoreDocCollector.create(5);
+                Query q = new QueryParser(Version.LUCENE_44, "contents", analyzer).parse(s);
+                TopScoreDocCollector collector = TopScoreDocCollector.create(5, true);
                 searcher.search(q, collector);
                 ScoreDoc[] hits = collector.topDocs().scoreDocs;
 

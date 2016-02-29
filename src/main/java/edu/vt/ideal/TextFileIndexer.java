@@ -8,12 +8,12 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.Version;
 
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,8 +33,8 @@ public class TextFileIndexer implements Closeable {
     public TextFileIndexer(String indexDir) throws IOException {
         // the boolean true parameter means to create a new index everytime,
         // potentially overwriting any existing files there.
-        FSDirectory dir = FSDirectory.open(Paths.get(indexDir));
-        IndexWriterConfig config = new IndexWriterConfig(new StandardAnalyzer());
+        FSDirectory dir = FSDirectory.open(new File(indexDir));
+        IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_44, new StandardAnalyzer(Version.LUCENE_44));
 
         writer = new IndexWriter(dir, config);
 
