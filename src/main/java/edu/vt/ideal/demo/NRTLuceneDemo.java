@@ -25,7 +25,7 @@ public class NRTLuceneDemo {
         RAMDirectory index = new RAMDirectory();
 
         IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_44, analyzer);
-        IndexWriter indexWriter = new IndexWriter(index, config);
+        final IndexWriter indexWriter = new IndexWriter(index, config);
 
         // tracks changes to delegated used by ControlledRealTimeReopenThread to ensure they are visible
         TrackingIndexWriter trackingIndexWriter = new TrackingIndexWriter(indexWriter);
