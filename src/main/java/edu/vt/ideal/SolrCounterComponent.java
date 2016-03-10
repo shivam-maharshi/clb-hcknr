@@ -20,18 +20,15 @@ import java.util.*;
 public class SolrCounterComponent extends SearchComponent {
     private static Logger logger = Logger.getLogger(SolrCounterComponent.class);
 
-    private Set<String> counter;
+    private Set<String> words;
 
     @Override
     public void init(NamedList args) {
         super.init(args);
 
-        counter = new HashSet<>();
-        counter.add("samsung");
-        counter.add("apple");
-        counter.add("asus");
-        counter.add("belkin");
-        counter.add("ati");
+        words = new HashSet<>();
+        //noinspection unchecked
+        words.addAll((List<String>) args.getAll("word"));
     }
 
     @Override
@@ -41,7 +38,7 @@ public class SolrCounterComponent extends SearchComponent {
 
     @Override
     public void process(ResponseBuilder rb) throws IOException {
-        logger.info(String.format("[ %s ] - Popularity Boost Component invoked", new Date()));
+        logger.info(String.format("[ %s ] - Counter Component invoked", new Date()));
 
         DocListAndSet results = rb.getResults();
 
@@ -60,7 +57,7 @@ public class SolrCounterComponent extends SearchComponent {
                 for (IndexableField multiField : d.getFields()) {
                     for (String string : multiField.stringValue().split(" ")) {
                         String word = string.toLowerCase();
-                        if (counter.contains(word)) {
+                        if (words.contains(word)) {
                             if (!response.containsKey(word))
                                 response.put(word, 0);
                             response.put(word, response.get(word) + 1);
