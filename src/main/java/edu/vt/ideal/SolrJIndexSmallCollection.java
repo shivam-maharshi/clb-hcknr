@@ -5,12 +5,13 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.common.SolrInputDocument;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.Properties;
 
 /**
@@ -65,12 +66,17 @@ public class SolrJIndexSmallCollection {
         System.out.println("Inserting lines from: " + smallCollection);
 
         // Inserting all lines from TSV file to Solr
-        List<String> lines = Files.readAllLines(path);
-        for (int i = 0; i < lines.size(); i++) {
-            insertRow(lines.get(i), client);
-            if (i % 100 == 0)
-                client.commit();
+        try (BufferedReader reader = new BufferedReader(new FileReader(path.toFile()))) {
+            String line;
+            int i = 0;
+            while ((line = reader.readLine()) != null) {
+                insertRow(line, client);
+                if (i % 100 == 0)
+                    client.commit();
+                i++;
+            }
         }
+        client.commit();
 
         System.out.println("Lines inserted. Verify Solr.");
 

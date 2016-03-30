@@ -28,12 +28,12 @@ import java.io.IOException;
 public class SimpleLuceneDemo {
     public static void main(String[] args) throws IOException, ParseException {
         // filters tokenizer with standard, lowercase and stopwords filters
-        StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44);
+        StandardAnalyzer analyzer = new StandardAnalyzer();
         // in-memory index (directory)
         Directory index = new RAMDirectory();
 
         // configuration for index writer (create, append, create_append)
-        IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_44, analyzer);
+        IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_10_3, analyzer);
 
         IndexWriter writer = new IndexWriter(index, config);
         addDocument(writer, "Lucene in Action", "193398817");
@@ -45,7 +45,7 @@ public class SimpleLuceneDemo {
 
         String queryString = args.length > 0 ? args[0] : "lucene";
         // constructs query title="<value>" for queryString
-        Query query = new QueryParser(Version.LUCENE_44, "title", analyzer).parse(queryString);
+        Query query = new QueryParser("title", analyzer).parse(queryString);
 
         int hitsPerPage = 10;
         // accesses point-in-time view of the index

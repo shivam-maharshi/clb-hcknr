@@ -34,7 +34,7 @@ public class TextFileIndexer implements Closeable {
         // the boolean true parameter means to create a new index everytime,
         // potentially overwriting any existing files there.
         FSDirectory dir = FSDirectory.open(new File(indexDir));
-        IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_44, new StandardAnalyzer(Version.LUCENE_44));
+        IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_10_3, new StandardAnalyzer());
 
         writer = new IndexWriter(dir, config);
 
