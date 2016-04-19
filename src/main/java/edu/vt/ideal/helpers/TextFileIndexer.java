@@ -1,4 +1,4 @@
-package edu.vt.ideal;
+package edu.vt.ideal.helpers;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;

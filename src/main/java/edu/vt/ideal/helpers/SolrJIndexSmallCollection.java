@@ -1,4 +1,4 @@
-package edu.vt.ideal;
+package edu.vt.ideal.helpers;
 
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
