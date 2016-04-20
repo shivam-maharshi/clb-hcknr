@@ -73,9 +73,10 @@ public class IDEALRankingComponent extends SearchComponent {
         Query originalQuery = rb.getQuery();
         originalQuery.extractTerms(termSet);
 
+        // tries to expand original query with topic label derived from terms
         String label = topicIndexer.searchTopicLabel(termSet);
         if (label != null) {
-            TermQuery supplementQuery = new TermQuery(new Term("text", "Apple".toLowerCase()));
+            TermQuery supplementQuery = new TermQuery(new Term("text", label.toLowerCase()));
             // not to overwhelm original query
             supplementQuery.setBoost(originalQuery.getBoost() * .9f);
 
