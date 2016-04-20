@@ -4,9 +4,13 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queries.CustomScoreProvider;
 import org.apache.lucene.queries.CustomScoreQuery;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
 import org.apache.solr.common.util.NamedList;
 import org.apache.solr.handler.component.ResponseBuilder;
 import org.apache.solr.handler.component.SearchComponent;
@@ -15,9 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Author: dedocibula
@@ -28,6 +30,7 @@ public class IDEALRankingComponent extends SearchComponent {
 
     private final Map<String, Float> fieldWeights;
     private boolean verboseMode = false;
+    private IDEALTopicIndexer topicIndexer;
 
     public IDEALRankingComponent() {
         fieldWeights = new HashMap<>();
@@ -55,6 +58,9 @@ public class IDEALRankingComponent extends SearchComponent {
             return;
         }
 
+        // create topic index
+        topicIndexer = IDEALTopicIndexer.create((String) args.get("hbase-file"), this.verboseMode);
+
         initializeWeights(weightFile);
     }
 
@@ -63,70 +69,34 @@ public class IDEALRankingComponent extends SearchComponent {
         if (verboseMode)
             logger.info("IDEAL Ranking Component prepare phase invoked.");
 
+        Set<Term> termSet = new HashSet<>();
+        Query originalQuery = rb.getQuery();
+        originalQuery.extractTerms(termSet);
+
+        String label = topicIndexer.searchTopicLabel(termSet);
+        if (label != null) {
+            TermQuery supplementQuery = new TermQuery(new Term("text", "Apple".toLowerCase()));
+            // not to overwhelm original query
+            supplementQuery.setBoost(originalQuery.getBoost() * .9f);
+
+            BooleanQuery query = new BooleanQuery();
+            query.add(originalQuery, BooleanClause.Occur.SHOULD);
+            query.add(supplementQuery, BooleanClause.Occur.SHOULD);
+
+            if (verboseMode)
+                logger.info(String.format("Original query [ %s ], supplemented query [ %s ]", originalQuery, query));
+
+            originalQuery = query;
+        }
+
         // adds custom scores as tf-idf + fieldValue1 * weight1 + fieldValue2 * weight2...
-        rb.setQuery(new ScoreBoostingQuery(rb.getQuery(), fieldWeights, verboseMode));
+        rb.setQuery(new ScoreBoostingQuery(originalQuery, fieldWeights, verboseMode));
     }
 
     @Override
     public void process(ResponseBuilder rb) throws IOException {
         if (verboseMode)
             logger.info("IDEAL Ranking Component process phase invoked.");
-
-//        DocListAndSet results = rb.getResults();
-//        DocList docList = results.docList;
-//
-//        if (docList.size() > 1) {
-//            float maxScore = .0f;
-//
-//            SortedSet<ScoreDoc> sortedScores = new TreeSet<>();
-//
-//            DocIterator iterator = docList.iterator();
-//            while (iterator.hasNext()) {
-//                int docId = iterator.nextDoc();
-//                float score = docList.hasScores() ? .5f + (iterator.score() / (2 * docList.maxScore())) : .0f;
-//
-//                if (verboseMode)
-//                    logger.info(String.format("DocId [ %s ], original score [ %s ]", docId, score));
-//
-//                Document d = rb.req.getSearcher().doc(docId);
-//                for (String label : weights.keySet()) {
-//                    IndexableField scoreField = d.getField(weightToScoreMappings.get(label));
-//                    if (scoreField != null && scoreField.numericValue() != null) {
-//                        float scoreBoost = scoreField.numericValue().floatValue();
-//                        float weight = weights.get(label);
-//                        if (verboseMode)
-//                            logger.info(String.format("DocId [ %s ], field [ %s ], score boost [ %s ], weight [ %s ]",
-//                                    docId, weightToScoreMappings.get(label), scoreBoost, weight));
-//                        score += weight * scoreBoost;
-//                    }
-//                }
-//
-//                if (verboseMode)
-//                    logger.info(String.format("DocId [ %s ], final score [ %s ]", docId, score));
-//
-//                sortedScores.add(new ScoreDoc(docId, score));
-//                maxScore = Math.max(maxScore, score);
-//            }
-//
-//            // our new scores
-//            int[] docs = new int[docList.size()];
-//            float[] scores = new float[docList.size()];
-//            int idx = 0;
-//            for (ScoreDoc score : sortedScores) {
-//                docs[idx] = score.doc;
-//                scores[idx] = score.score;
-//                idx++;
-//            }
-//
-//            // reuse original values
-//            int len = docList.size();
-//            int offset = docList.offset();
-//            int totalHits = docList.matches();
-//
-//            results.docList = new DocSlice(offset, len, docs, scores, totalHits, maxScore);
-//            ResultContext ctx = (ResultContext) rb.rsp.getValues().get("response");
-//            ctx.docs = results.docList;
-//        }
     }
 
     @Override
