@@ -1,6 +1,6 @@
 package edu.vt.ideal.demo;
 
-import edu.vt.ideal.TextFileIndexer;
+import edu.vt.ideal.helpers.TextFileIndexer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;

@@ -1,4 +1,4 @@
-package edu.vt.ideal;
+package edu.vt.ideal.helpers;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
