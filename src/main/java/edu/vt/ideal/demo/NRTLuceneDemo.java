@@ -21,11 +21,11 @@ import java.io.IOException;
  */
 public class NRTLuceneDemo {
     public static void main(String[] args) throws IOException, InterruptedException {
-        StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44);
+        StandardAnalyzer analyzer = new StandardAnalyzer();
         RAMDirectory index = new RAMDirectory();
 
-        IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_44, analyzer);
-        IndexWriter indexWriter = new IndexWriter(index, config);
+        IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_10_3, analyzer);
+        final IndexWriter indexWriter = new IndexWriter(index, config);
 
         // tracks changes to delegated used by ControlledRealTimeReopenThread to ensure they are visible
         TrackingIndexWriter trackingIndexWriter = new TrackingIndexWriter(indexWriter);

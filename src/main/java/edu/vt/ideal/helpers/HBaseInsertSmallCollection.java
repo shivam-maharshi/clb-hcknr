@@ -1,4 +1,4 @@
-package edu.vt.ideal;
+package edu.vt.ideal.helpers;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
@@ -11,6 +11,8 @@ import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.RetriesExhaustedWithDetailsException;
 import org.apache.hadoop.hbase.util.Bytes;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.nio.file.Files;
@@ -82,8 +84,10 @@ public class HBaseInsertSmallCollection {
         System.out.println("Inserting lines from: " + smallCollection);
 
         // Inserting all lines from TSV file to HBase
-        for (String line : Files.readAllLines(path)) {
-            insertRow(line, hTable, columnFamily);
+        try (BufferedReader reader = new BufferedReader(new FileReader(path.toFile()))) {
+            String line;
+            while ((line = reader.readLine()) != null)
+                insertRow(line, hTable, columnFamily);
         }
 
         System.out.println("Lines inserted. Verify HBase.");

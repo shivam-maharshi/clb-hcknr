@@ -1,6 +1,6 @@
 package edu.vt.ideal.demo;
 
-import edu.vt.ideal.TextFileIndexer;
+import edu.vt.ideal.helpers.TextFileIndexer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
@@ -11,7 +11,6 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.util.Version;
 
 import java.io.File;
 import java.io.IOException;
@@ -70,7 +69,7 @@ public class TextFileIndexerDemo {
         IndexSearcher searcher = new IndexSearcher(reader);
 
         s = "";
-        StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_44);
+        StandardAnalyzer analyzer = new StandardAnalyzer();
         while (!s.equalsIgnoreCase("q")) {
             try {
                 System.out.println("Enter the search query (q=quit):");
@@ -78,7 +77,7 @@ public class TextFileIndexerDemo {
                 if (s.equalsIgnoreCase("q")) {
                     break;
                 }
-                Query q = new QueryParser(Version.LUCENE_44, "contents", analyzer).parse(s);
+                Query q = new QueryParser("contents", analyzer).parse(s);
                 TopScoreDocCollector collector = TopScoreDocCollector.create(5, true);
                 searcher.search(q, collector);
                 ScoreDoc[] hits = collector.topDocs().scoreDocs;
