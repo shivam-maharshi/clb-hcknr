@@ -45,7 +45,7 @@
     that avoids logging every request
 -->
 
-<schema name="example" version="1.5">
+<schema name="ideal-cs5604s16_test" version="1.5">
   <!-- attribute "name" is the name of this schema and is only used for display purposes.
        version="x.y" is Solr's version number for the schema syntax and 
        semantics.  It should not normally be changed by applications.
@@ -107,11 +107,12 @@
    -->
         
    <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" /> 
+   
    <!-- points to the root document of a block of nested documents. Required for nested
         document support, may be removed otherwise
    -->
-   <field name="_root_" type="string" indexed="true" stored="false"/>
-   <field name="data" type="text_general" indexed="true" stored="true"/>
+   <!--<field name="_root_" type="string" indexed="true" stored="false"/>
+   
    <field name="sku" type="text_en_splitting_tight" indexed="true" stored="true" omitNorms="true"/>
    <field name="name" type="text_general" indexed="true" stored="true"/>
    <field name="manu" type="text_general" indexed="true" stored="true" omitNorms="true"/>
@@ -124,7 +125,7 @@
    <field name="popularity" type="int" indexed="true" stored="true" />
    <field name="inStock" type="boolean" indexed="true" stored="true" />
 
-   <field name="store" type="location" indexed="true" stored="true"/>
+   <field name="store" type="location" indexed="true" stored="true"/>-->
 
    <!-- Common metadata fields, named specifically to match up with
      SolrCell metadata when parsing rich documents such as Word, PDF.
@@ -134,7 +135,8 @@
        "content_type": From the HTTP headers of incoming stream
        "resourcename": From SolrCell request param resource.name
    -->
-   <field name="title" type="text_general" indexed="true" stored="true" multiValued="true"/>
+   <field name="text" type="text_general" indexed="true" stored="true"/>
+   <!--<field name="title" type="text_general" indexed="true" stored="true" multiValued="true"/>
    <field name="subject" type="text_general" indexed="true" stored="true"/>
    <field name="description" type="text_general" indexed="true" stored="true"/>
    <field name="comments" type="text_general" indexed="true" stored="true"/>
@@ -145,28 +147,28 @@
    <field name="url" type="text_general" indexed="true" stored="true"/>
    <field name="content_type" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="last_modified" type="date" indexed="true" stored="true"/>
-   <field name="links" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="links" type="string" indexed="true" stored="true" multiValued="true"/>-->
 
    <!-- Main body of document extracted by SolrCell.
         NOTE: This field is not indexed by default, since it is also copied to "text"
         using copyField below. This is to save space. Use this field for returning and
         highlighting document content. Use the "text" field to search the content. -->
-   <field name="content" type="text_general" indexed="false" stored="true" multiValued="true"/>
+   <!--<field name="content" type="text_general" indexed="false" stored="true" multiValued="true"/>-->
    
 
    <!-- catchall field, containing all other searchable text fields (implemented
         via copyField further on in this schema  -->
-   <field name="text" type="text_general" indexed="true" stored="false" multiValued="true"/>
+   <!--<field name="text" type="text_general" indexed="true" stored="false" multiValued="true"/>-->
 
    <!-- catchall text field that indexes tokens both normally and in reverse for efficient
         leading wildcard queries. -->
-   <field name="text_rev" type="text_general_rev" indexed="true" stored="false" multiValued="true"/>
+   <!--<field name="text_rev" type="text_general_rev" indexed="true" stored="false" multiValued="true"/>-->
 
    <!-- non-tokenized version of manufacturer to make it easier to sort or group
         results by manufacturer.  copied from "manu" via copyField -->
-   <field name="manu_exact" type="string" indexed="true" stored="false"/>
+   <!--<field name="manu_exact" type="string" indexed="true" stored="false"/>
 
-   <field name="payloads" type="payloads" indexed="true" stored="true"/>
+   <field name="payloads" type="payloads" indexed="true" stored="true"/>-->
 
    <field name="_version_" type="long" indexed="true" stored="true"/>
 
@@ -220,6 +222,9 @@
    <dynamicField name="*_pi"  type="pint"    indexed="true"  stored="true"/>
    <dynamicField name="*_c"   type="currency" indexed="true"  stored="true"/>
 
+   <!-- dynamic field for auth tokens -->
+   <dynamicField name="*_auth" type="string" indexed="true" stored="false" multiValued="true"/>
+
    <dynamicField name="ignored_*" type="ignored" multiValued="true"/>
    <dynamicField name="attr_*" type="text_general" indexed="true" stored="true" multiValued="true"/>
 
@@ -258,28 +263,30 @@
         is added to the index.  It's used either to index the same field differently,
         or to add multiple fields to the same field for easier/faster searching.  -->
 
-   <copyField source="cat" dest="text"/>
+   <copyField source="tweet_text_s" dest="text"/>
+   <copyField source="web_clean_text_t" dest="text"/>
+   <!--<copyField source="cat" dest="text"/>
    <copyField source="name" dest="text"/>
    <copyField source="manu" dest="text"/>
    <copyField source="features" dest="text"/>
    <copyField source="includes" dest="text"/>
-   <copyField source="manu" dest="manu_exact"/>
+   <copyField source="manu" dest="manu_exact"/>-->
 
    <!-- Copy the price into a currency enabled field (default USD) -->
-   <copyField source="price" dest="price_c"/>
+   <!--<copyField source="price" dest="price_c"/>-->
 
    <!-- Text fields from SolrCell to search by default in our catch-all field -->
-   <copyField source="title" dest="text"/>
+   <!--<copyField source="title" dest="text"/>
    <copyField source="author" dest="text"/>
    <copyField source="description" dest="text"/>
    <copyField source="keywords" dest="text"/>
    <copyField source="content" dest="text"/>
    <copyField source="content_type" dest="text"/>
    <copyField source="resourcename" dest="text"/>
-   <copyField source="url" dest="text"/>
+   <copyField source="url" dest="text"/>-->
 
    <!-- Create a string version of author for faceting -->
-   <copyField source="author" dest="author_s"/>
+   <!--<copyField source="author" dest="author_s"/>-->
 	
    <!-- Above, multiple source fields are copied to the [text] field. 
 	  Another way to map multiple source fields to the same 
@@ -446,6 +453,8 @@
       <analyzer type="index">
         <tokenizer class="solr.StandardTokenizerFactory"/>
         <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" />
+        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stoplist.txt" />
+        <filter class="solr.StopFilterFactory" ignoreCase="true" words="profanity.txt" />
         <!-- in this example, we will only use synonyms at query time
         <filter class="solr.SynonymFilterFactory" synonyms="index_synonyms.txt" ignoreCase="true" expand="false"/>
         -->
@@ -454,6 +463,8 @@
       <analyzer type="query">
         <tokenizer class="solr.StandardTokenizerFactory"/>
         <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" />
+        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stoplist.txt" />
+        <filter class="solr.StopFilterFactory" ignoreCase="true" words="profanity.txt" />
         <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
         <filter class="solr.LowerCaseFilterFactory"/>
       </analyzer>
