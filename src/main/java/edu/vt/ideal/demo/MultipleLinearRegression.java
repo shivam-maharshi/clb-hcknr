@@ -13,7 +13,7 @@ import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
  * 
  * @author shivam.maharshi
  */
-public class MultipleRegression {
+public class MultipleLinearRegression {
 
 	public static void execute(double[] y, double[][] x) {
 		OLSMultipleLinearRegression mlr = new OLSMultipleLinearRegression();
