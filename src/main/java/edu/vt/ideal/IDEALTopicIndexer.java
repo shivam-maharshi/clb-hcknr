@@ -12,10 +12,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.Term;
+import org.apache.lucene.index.*;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
@@ -23,10 +20,7 @@ import org.apache.lucene.util.Version;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * Author: dedocibula
@@ -40,6 +34,8 @@ public final class IDEALTopicIndexer {
     private static final String COLLECTION_FIELD = "collection_id";
     private static final String WORDS_FIELD = "words";
     private static final String PROBABILITIES_FIELD = "probabilities";
+
+    private static final int MAX_RESULTS = 3;
 
     private boolean verboseMode;
     private IndexSearcher searcher;
@@ -81,22 +77,32 @@ public final class IDEALTopicIndexer {
         }
     }
 
-    String searchTopicLabel(Collection<Term> terms) throws IOException {
+    Set<String> searchTopicLabels(Collection<Term> terms) throws IOException {
+        // only if we have an index
         if (searcher == null)
             return null;
 
+        // creating synthetic query
         BooleanQuery query = new BooleanQuery();
         for (Term term : terms)
+            // TODO add weights to alter score of the results based on words probabilities
             query.add(new TermQuery(new Term(WORDS_FIELD, term.text())), BooleanClause.Occur.SHOULD);
         if (this.verboseMode)
             logger.info(query);
 
-        TopDocs topDocs = searcher.search(query, 1);
+        TopDocs topDocs = searcher.search(query, MAX_RESULTS);
+        if (this.verboseMode)
+            logger.info(String.format("Found [ %s ] matches", topDocs.totalHits));
         if (topDocs.totalHits > 0) {
-            String label = searcher.doc(topDocs.scoreDocs[0].doc).getField(LABEL_FIELD).stringValue();
+            Set<String> labels = new HashSet<>();
+            for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
+                IndexableField labelField = searcher.doc(scoreDoc.doc).getField(LABEL_FIELD);
+                if (labelField != null && labelField.stringValue() != null)
+                    labels.add(labelField.stringValue());
+            }
             if (this.verboseMode)
-                logger.info(String.format("Match found for some of the terms. Topic label [ %s ]", label));
-            return label;
+                logger.info(String.format("Match found for some of the terms. Topic labels %s", labels));
+            return labels;
         }
 
         return null;
@@ -112,13 +118,23 @@ public final class IDEALTopicIndexer {
                 String probabilities;
 
                 // extracting fields from HBase
-                if ((topicLabel = extractValue(result, LABEL_FIELD)) == null || (collection = extractValue(result, COLLECTION_FIELD)) == null ||
-                        (words = extractValue(result, WORDS_FIELD)) == null || (probabilities = extractValue(result, PROBABILITIES_FIELD)) == null)
+                byte[] rowKey = result.getRow();
+                if (rowKey == null) {
+                    if (this.verboseMode)
+                        logger.error("Skipping HBase row. Couldn't find row key");
+                    continue;
+                }
+                topicLabel = new String(rowKey, StandardCharsets.UTF_8);
+
+                if ((collection = extractValue(result, COLLECTION_FIELD)) == null || (words = extractValue(result, WORDS_FIELD)) == null ||
+                        (probabilities = extractValue(result, PROBABILITIES_FIELD)) == null)
                     continue;
 
                 Document doc = new Document();
                 doc.add(new StringField(LABEL_FIELD, topicLabel, Field.Store.YES));
+                doc.add(new StringField(COLLECTION_FIELD, collection, Field.Store.YES));
                 doc.add(new TextField(WORDS_FIELD, words, Field.Store.YES));
+                doc.add(new StringField(PROBABILITIES_FIELD, probabilities, Field.Store.NO));
 
                 documents.add(doc);
             }
@@ -142,7 +158,7 @@ public final class IDEALTopicIndexer {
     public static void main(String[] args) throws Exception {
         logger.addAppender(new ConsoleAppender(new SimpleLayout()));
 
-        IDEALTopicIndexer indexer = new IDEALTopicIndexer(true);
-        indexer.searchTopicLabel(new HashSet<Term>() {{add(new Term("text", "condition"));}});
+        // test run: java -classpath=<path to this JAR> edu.vt.ideal.IDEALTopicIndexer
+        new IDEALTopicIndexer(true);
     }
 }

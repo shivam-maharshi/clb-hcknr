@@ -73,16 +73,20 @@ public class IDEALRankingComponent extends SearchComponent {
         Query originalQuery = rb.getQuery();
         originalQuery.extractTerms(termSet);
 
-        // tries to expand original query with topic label derived from terms
-        String label = topicIndexer.searchTopicLabel(termSet);
-        if (label != null) {
-            TermQuery supplementQuery = new TermQuery(new Term("text", label.toLowerCase()));
-            // not to overwhelm original query
-            supplementQuery.setBoost(originalQuery.getBoost() * .9f);
-
+        // tries to expand original query with topic labels derived from terms
+        Set<String> labels = topicIndexer.searchTopicLabels(termSet);
+        if (labels != null) {
             BooleanQuery query = new BooleanQuery();
             query.add(originalQuery, BooleanClause.Occur.SHOULD);
-            query.add(supplementQuery, BooleanClause.Occur.SHOULD);
+
+            for (String label : labels) {
+                // text field contains all the text/string values of the document
+                TermQuery supplementQuery = new TermQuery(new Term("text", label.toLowerCase()));
+                // not to overwhelm original query
+                // TODO replace with word probabilities (IDEALTopicIndexer)
+                supplementQuery.setBoost(originalQuery.getBoost() * .9f);
+                query.add(supplementQuery, BooleanClause.Occur.SHOULD);
+            }
 
             if (verboseMode)
                 logger.info(String.format("Original query [ %s ], supplemented query [ %s ]", originalQuery, query));
