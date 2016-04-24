@@ -33,7 +33,6 @@ public final class IDEALTopicIndexer {
     private static final String LABEL_FIELD = "label";
     private static final String COLLECTION_FIELD = "collection_id";
     private static final String WORDS_FIELD = "words";
-    private static final String PROBABILITIES_FIELD = "probabilities";
 
     private static final int MAX_RESULTS = 3;
 
@@ -84,12 +83,18 @@ public final class IDEALTopicIndexer {
 
         // creating synthetic query
         BooleanQuery query = new BooleanQuery();
-        for (Term term : terms)
-            // TODO add weights to alter score of the results based on words probabilities
-            query.add(new TermQuery(new Term(WORDS_FIELD, term.text())), BooleanClause.Occur.SHOULD);
+        for (Term term : terms) {
+            // if query contains explicit collection number narrow the search down to only relevant topics
+            if (term.field().equals("colnum_s"))
+                query.add(new TermQuery(new Term(COLLECTION_FIELD, term.text())), BooleanClause.Occur.MUST);
+            else // else use the text to search in words
+                query.add(new TermQuery(new Term(WORDS_FIELD, term.text())), BooleanClause.Occur.SHOULD);
+            query.setMinimumNumberShouldMatch(1);
+        }
         if (this.verboseMode)
             logger.info(query);
 
+        // getting results
         TopDocs topDocs = searcher.search(query, MAX_RESULTS);
         if (this.verboseMode)
             logger.info(String.format("Found [ %s ] matches", topDocs.totalHits));
@@ -115,7 +120,6 @@ public final class IDEALTopicIndexer {
                 String topicLabel;
                 String collection;
                 String words;
-                String probabilities;
 
                 // extracting fields from HBase
                 byte[] rowKey = result.getRow();
@@ -126,15 +130,13 @@ public final class IDEALTopicIndexer {
                 }
                 topicLabel = new String(rowKey, StandardCharsets.UTF_8);
 
-                if ((collection = extractValue(result, COLLECTION_FIELD)) == null || (words = extractValue(result, WORDS_FIELD)) == null ||
-                        (probabilities = extractValue(result, PROBABILITIES_FIELD)) == null)
+                if ((collection = extractValue(result, COLLECTION_FIELD)) == null || (words = extractValue(result, WORDS_FIELD)) == null)
                     continue;
 
                 Document doc = new Document();
                 doc.add(new StringField(LABEL_FIELD, topicLabel, Field.Store.YES));
                 doc.add(new StringField(COLLECTION_FIELD, collection, Field.Store.YES));
                 doc.add(new TextField(WORDS_FIELD, words, Field.Store.YES));
-                doc.add(new StringField(PROBABILITIES_FIELD, probabilities, Field.Store.NO));
 
                 documents.add(doc);
             }
