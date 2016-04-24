@@ -59,7 +59,7 @@ public class IDEALRankingComponent extends SearchComponent {
         }
 
         // create topic index
-        topicIndexer = IDEALTopicIndexer.create((String) args.get("hbase-file"), this.verboseMode);
+        topicIndexer = new IDEALTopicIndexer(this.verboseMode);
 
         initializeWeights(weightFile);
     }

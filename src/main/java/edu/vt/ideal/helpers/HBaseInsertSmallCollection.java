@@ -5,16 +5,13 @@ import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.TableName;
-import org.apache.hadoop.hbase.client.HBaseAdmin;
-import org.apache.hadoop.hbase.client.HTable;
-import org.apache.hadoop.hbase.client.Put;
-import org.apache.hadoop.hbase.client.RetriesExhaustedWithDetailsException;
+import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.InterruptedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -60,43 +57,45 @@ public class HBaseInsertSmallCollection {
         config.set("hbase.zookeeper.property.clientPort", props.getProperty("zookeeper-port", "2181"));
 
         // Checking connection
-        HBaseAdmin admin = new HBaseAdmin(config);
-        if (!admin.isMasterRunning()) {
+        try (Connection connection = ConnectionFactory.createConnection(config)) {
+            Admin admin = connection.getAdmin();
+            System.out.println("Successfully connected to HBase");
+
+            // Creating small collection table in HBase
+            String collectionName = props.getProperty("collection-name", "tweets");
+            String columnFamily = props.getProperty("column-family", "raw");
+            TableName tableName = TableName.valueOf(collectionName);
+            HTableDescriptor tableDescriptor = new HTableDescriptor(tableName);
+            tableDescriptor.addFamily(new HColumnDescriptor(columnFamily));
+            if (!admin.tableExists(tableName)) {
+                admin.createTable(tableDescriptor);
+                System.out.println("Table [ " + collectionName + " ] was created");
+            }
+
+            // Instantiating HTable class
+            Table hTable = connection.getTable(tableName);
+
+            System.out.println("Inserting lines from: " + smallCollection);
+
+            // Inserting all lines from TSV file to HBase
+            try (BufferedReader reader = new BufferedReader(new FileReader(path.toFile()))) {
+                String line;
+                while ((line = reader.readLine()) != null)
+                    insertRow(line, hTable, columnFamily);
+            }
+
+            System.out.println("Lines inserted. Verify HBase.");
+
+            // Closing HTable
+            hTable.close();
+            // Closing Admin
+            admin.close();
+        } catch (IOException e) {
             System.out.println("Could not establish connection to Cloudera VM");
-            return;
         }
-        System.out.println("Successfully connected to HBase Master");
-
-        // Creating small collection table in HBase
-        String collectionName = props.getProperty("collection-name", "tweets");
-        String columnFamily = props.getProperty("column-family", "raw");
-        TableName tableName = TableName.valueOf(collectionName);
-        HTableDescriptor tableDescriptor = new HTableDescriptor(tableName);
-        tableDescriptor.addFamily(new HColumnDescriptor(columnFamily));
-        if (!admin.tableExists(tableName)) {
-            admin.createTable(tableDescriptor);
-            System.out.println("Table [ " + collectionName + " ] was created");
-        }
-
-        // Instantiating HTable class
-        HTable hTable = new HTable(config, tableName);
-
-        System.out.println("Inserting lines from: " + smallCollection);
-
-        // Inserting all lines from TSV file to HBase
-        try (BufferedReader reader = new BufferedReader(new FileReader(path.toFile()))) {
-            String line;
-            while ((line = reader.readLine()) != null)
-                insertRow(line, hTable, columnFamily);
-        }
-
-        System.out.println("Lines inserted. Verify HBase.");
-
-        // Closing HTable
-        hTable.close();
     }
 
-    private static void insertRow(String line, HTable hTable, String columnFamily) throws InterruptedIOException, RetriesExhaustedWithDetailsException {
+    private static void insertRow(String line, Table hTable, String columnFamily) throws IOException {
         if (line == null) {
             System.out.println("Null line");
             return;
@@ -115,7 +114,7 @@ public class HBaseInsertSmallCollection {
 
         // Adding values using add() method
         // Accepts column family name, qualifier/row name ,value
-        p.add(b(columnFamily), b("text"), b(parts[1].trim()));
+        p.addColumn(b(columnFamily), b("text"), b(parts[1].trim()));
 
         // Saving the put Instance to the HTable.
         hTable.put(p);
