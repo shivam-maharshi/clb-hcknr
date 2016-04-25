@@ -158,6 +158,7 @@ public class IDEALRankingComponent extends SearchComponent {
                         logger.info(String.format("DocId [ %s ], original score [ %s ]", doc, score));
 
                     Document d = context.reader().document(doc);
+                    // boosts to the score based on normalized value of certain fields
                     for (String field : fieldWeights.keySet()) {
                         IndexableField scoreField = d.getField(field);
                         if (scoreField != null && scoreField.numericValue() != null) {
