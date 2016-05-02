@@ -35,4 +35,4 @@ EXPOSE 8080 3306 80
 RUN mysql -u root -e 'CREATE DATABASE wiki;'
 RUN mysql -u root -e 'GRANT ALL PRIVILEGES ON wiki.* TO 'root'@'127.0.0.1';'
 RUN git clone https://github.com/shivam-maharshi/Docker-MediaWiki
-RUN sh Docker-MediaWiki/Ubuntu-14.04/install-mediawiki.sh
+RUN sh Docker-MediaWiki/Ubuntu-14.04/install-mw.sh
