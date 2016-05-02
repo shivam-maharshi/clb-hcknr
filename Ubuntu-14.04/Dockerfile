@@ -25,7 +25,7 @@ RUN service mysql start
 RUN export TERM=xterm
 RUN wget "https://releases.wikimedia.org/mediawiki/1.26/mediawiki-1.26.2.tar.gz"
 RUN tar -xvzf mediawiki-1.26.2.tar.gz
-RUN mv mediawiki-1.26.2 /var/www/html/wiki
+RUN mv mediawiki-1.26.2 /var/www/wiki
 RUN echo "Include /etc/phpmyadmin/apache.conf" >> /etc/apache2/apache2.conf
 RUN echo "ServerName 127.0.0.1" >> /etc/apache2/apache2.conf
 RUN echo "Listen 8080" >> /etc/apache2/ports.conf
@@ -35,4 +35,4 @@ EXPOSE 8080 3306 80
 RUN mysql -u root -e 'CREATE DATABASE wiki;'
 RUN mysql -u root -e 'GRANT ALL PRIVILEGES ON wiki.* TO 'root'@'127.0.0.1';'
 RUN git clone https://github.com/shivam-maharshi/Docker-MediaWiki
-RUN cp Docker-MediaWiki/Ubuntu-14.04/LocalSettings.php /var/www/html/wiki/LocalSettings.php
+RUN sh Docker-MediaWiki/Ubuntu-14.04/install-mediawiki.sh
