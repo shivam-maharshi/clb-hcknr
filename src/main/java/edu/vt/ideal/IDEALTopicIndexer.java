@@ -1,29 +1,26 @@
 package edu.vt.ideal;
 
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.*;
-import org.apache.hadoop.hbase.client.HBaseAdmin;
-import org.apache.hadoop.hbase.client.HTable;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.*;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.*;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
 
-import java.io.*;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * Author: dedocibula
@@ -31,53 +28,44 @@ import java.util.List;
  */
 public final class IDEALTopicIndexer {
     private static Logger logger = Logger.getLogger(IDEALTopicIndexer.class);
-    private static final String TABLE_NAME = "ideal-CS5604s16-topic-words";
+    private static final String TABLE_NAME = "ideal-cs5604s16-topic-words";
     private static final String COLUMN_FAMILY = "topics";
     private static final String LABEL_FIELD = "label";
     private static final String COLLECTION_FIELD = "collection_id";
     private static final String WORDS_FIELD = "words";
-    private static final String PROBABILITIES_FIELD = "probabilities";
 
-    private Configuration configuration;
+    private static final int MAX_RESULTS = 3;
+
     private boolean verboseMode;
-
     private IndexSearcher searcher;
 
-    private IDEALTopicIndexer(InputStream configStream, boolean verboseMode) {
+    IDEALTopicIndexer(boolean verboseMode) {
         this.verboseMode = verboseMode;
 
-        if (configStream == null) {
-            logger.warn("HBase configuration file not found. Initializing empty topic index");
-            return;
-        }
-
-        // creating configuration
-        configuration = HBaseConfiguration.create();
-        configuration.addResource(configStream);
-
-        // checking connection
-        try {
-            HBaseAdmin admin = new HBaseAdmin(configuration);
-            if (!admin.isMasterRunning()) {
-                if (this.verboseMode)
-                    logger.error("Could not establish connection to HBase");
-                return;
-            }
+        // creating configuration (automatically loads the correct one) and checking connection
+        try (Connection connection = ConnectionFactory.createConnection(HBaseConfiguration.create())) {
             if (this.verboseMode)
                 logger.info("Established connection to HBase");
 
             // checking table existence
             TableName tableName = TableName.valueOf(TABLE_NAME);
-            if (!admin.tableExists(tableName)) {
-                if (this.verboseMode)
-                    logger.error(String.format("Table [ %s ] does not exist", tableName));
-                return;
+            try (Admin admin = connection.getAdmin()) {
+                if (!admin.tableExists(tableName)) {
+                    if (this.verboseMode)
+                        logger.error(String.format("Table [ %s ] does not exist", tableName));
+                    return;
+                }
             }
 
             // creating in memory index
             Directory index = new RAMDirectory();
-            IndexWriter writer = new IndexWriter(index, new IndexWriterConfig(Version.LUCENE_4_10_3, new StandardAnalyzer()));
-            createIndex(writer);
+
+            // This line uses deprecated API because of version incompatibilities (Cloudera VM and cluster).
+            // The following is non deprecated cluster version:
+            //      IndexWriter writer = new IndexWriter(index, new IndexWriterConfig(Version.LATEST, new StandardAnalyzer()));
+            //noinspection deprecation
+            IndexWriter writer = new IndexWriter(index, new IndexWriterConfig(Version.LUCENE_CURRENT, new StandardAnalyzer(Version.LUCENE_CURRENT)));
+            createIndex(connection, tableName, writer);
             writer.close();
 
             // opening index for searching
@@ -88,55 +76,76 @@ public final class IDEALTopicIndexer {
         }
     }
 
-    public String searchTopicLabel(Collection<Term> terms) throws IOException {
+    Set<String> searchTopicLabels(Collection<Term> terms) throws IOException {
+        // only if we have an index
         if (searcher == null)
             return null;
 
+        // creating synthetic query
         BooleanQuery query = new BooleanQuery();
-        for (Term term : terms)
-            query.add(new TermQuery(new Term(WORDS_FIELD, term.text())), BooleanClause.Occur.SHOULD);
+        for (Term term : terms) {
+            // if query contains explicit collection number narrow the search down to only relevant topics
+            if (term.field().equals("colnum_s"))
+                query.add(new TermQuery(new Term(COLLECTION_FIELD, term.text())), BooleanClause.Occur.MUST);
+            else // else use the text to search in words
+                query.add(new TermQuery(new Term(WORDS_FIELD, term.text())), BooleanClause.Occur.SHOULD);
+            query.setMinimumNumberShouldMatch(1);
+        }
         if (this.verboseMode)
             logger.info(query);
 
-        TopDocs topDocs = searcher.search(query, 1);
-        if (topDocs.totalHits > 1) {
-            String label = searcher.doc(topDocs.scoreDocs[0].doc).getField(LABEL_FIELD).stringValue();
+        // getting results
+        TopDocs topDocs = searcher.search(query, MAX_RESULTS);
+        if (this.verboseMode)
+            logger.info(String.format("Found [ %s ] matches", topDocs.totalHits));
+        if (topDocs.totalHits > 0) {
+            Set<String> labels = new HashSet<>();
+            for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
+                IndexableField labelField = searcher.doc(scoreDoc.doc).getField(LABEL_FIELD);
+                if (labelField != null && labelField.stringValue() != null)
+                    labels.add(labelField.stringValue());
+            }
             if (this.verboseMode)
-                logger.info(String.format("Match found for some of the terms. Topic label [ %s ]", label));
-            return label;
+                logger.info(String.format("Match found for some of the terms. Topic labels %s", labels));
+            return labels;
         }
 
         return null;
     }
 
-    private void createIndex(IndexWriter writer) throws IOException {
-        HTable hTable = new HTable(this.configuration, TABLE_NAME);
+    private void createIndex(Connection connection, TableName tableName, IndexWriter writer) throws IOException {
+        try (Table hTable = connection.getTable(tableName)) {
+            List<Document> documents = new ArrayList<>();
+            for (Result result : hTable.getScanner(new Scan())) {
+                String topicLabel;
+                String collection;
+                String words;
 
-        List<Document> documents = new ArrayList<>();
-        for (Result result : hTable.getScanner(new Scan())) {
-            String topicLabel;
-            String collection;
-            String words;
-            String probabilities;
+                // extracting fields from HBase
+                byte[] rowKey = result.getRow();
+                if (rowKey == null) {
+                    if (this.verboseMode)
+                        logger.error("Skipping HBase row. Couldn't find row key");
+                    continue;
+                }
+                topicLabel = new String(rowKey, StandardCharsets.UTF_8);
 
-            // extracting fields from HBase
-            if ((topicLabel = extractValue(result, LABEL_FIELD)) == null || (collection = extractValue(result, COLLECTION_FIELD)) == null ||
-                    (words = extractValue(result, WORDS_FIELD)) == null || (probabilities = extractValue(result, PROBABILITIES_FIELD)) == null)
-                continue;
+                if ((collection = extractValue(result, COLLECTION_FIELD)) == null || (words = extractValue(result, WORDS_FIELD)) == null)
+                    continue;
 
-            Document doc = new Document();
-            doc.add(new StringField(LABEL_FIELD, topicLabel, Field.Store.YES));
-            doc.add(new TextField(WORDS_FIELD, words, Field.Store.YES));
+                Document doc = new Document();
+                doc.add(new StringField(LABEL_FIELD, topicLabel, Field.Store.YES));
+                doc.add(new StringField(COLLECTION_FIELD, collection, Field.Store.YES));
+                doc.add(new TextField(WORDS_FIELD, words, Field.Store.YES));
 
-            documents.add(doc);
+                documents.add(doc);
+            }
+
+            // bulk-inserting into Solr (all or nothing)
+            writer.addDocuments(documents);
+            if (verboseMode)
+                logger.info(String.format("Created in-memory index containing topic metadata with [ %s ] documents", documents.size()));
         }
-
-        // bulk-inserting into Solr (all or nothing)
-        writer.addDocuments(documents);
-        if (verboseMode)
-            logger.info(String.format("Created in-memory index containing topic metadata with [ %s ] documents", documents.size()));
-
-        hTable.close();
     }
 
     private String extractValue(Result result, String column) {
@@ -148,31 +157,10 @@ public final class IDEALTopicIndexer {
         return value != null ? new String(value, StandardCharsets.UTF_8) : null;
     }
 
-    static IDEALTopicIndexer create(String configFile, boolean verboseMode) {
-        if (configFile == null || configFile.isEmpty()) {
-            System.out.println("HBase-site.xml path cannot be null or empty");
-            return new IDEALTopicIndexer(null, verboseMode);
-        }
-
-        Path path = Paths.get(configFile);
-        if (Files.notExists(path) || !Files.isRegularFile(path) || !Files.isReadable(path)) {
-            System.out.println("No readable config file found: " + configFile);
-            return new IDEALTopicIndexer(null, verboseMode);
-        }
-
-        try {
-            return new IDEALTopicIndexer(new FileInputStream(path.toFile()), true);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public static void main(String[] args) throws Exception {
-        if (args.length < 1) {
-            System.out.println("Please specify parameters: <hbase-site.xml path>");
-            return;
-        }
+        logger.addAppender(new ConsoleAppender(new SimpleLayout()));
 
-        create(args[0], true);
+        // test run: java -classpath=<path to this JAR> edu.vt.ideal.IDEALTopicIndexer
+        new IDEALTopicIndexer(true);
     }
 }
