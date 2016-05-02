@@ -45,7 +45,7 @@
     that avoids logging every request
 -->
 
-<schema name="ideal-cs5604s16_test" version="1.5">
+<schema name="ideal-cs5604s16" version="1.5">
   <!-- attribute "name" is the name of this schema and is only used for display purposes.
        version="x.y" is Solr's version number for the schema syntax and 
        semantics.  It should not normally be changed by applications.
@@ -135,7 +135,6 @@
        "content_type": From the HTTP headers of incoming stream
        "resourcename": From SolrCell request param resource.name
    -->
-   <field name="text" type="text_general" indexed="true" stored="true"/>
    <!--<field name="title" type="text_general" indexed="true" stored="true" multiValued="true"/>
    <field name="subject" type="text_general" indexed="true" stored="true"/>
    <field name="description" type="text_general" indexed="true" stored="true"/>
@@ -158,7 +157,7 @@
 
    <!-- catchall field, containing all other searchable text fields (implemented
         via copyField further on in this schema  -->
-   <!--<field name="text" type="text_general" indexed="true" stored="false" multiValued="true"/>-->
+   <field name="text" type="text_general" indexed="true" stored="false" multiValued="true"/>
 
    <!-- catchall text field that indexes tokens both normally and in reverse for efficient
         leading wildcard queries. -->
@@ -263,8 +262,17 @@
         is added to the index.  It's used either to index the same field differently,
         or to add multiple fields to the same field for easier/faster searching.  -->
 
-   <copyField source="tweet_text_s" dest="text"/>
-   <copyField source="web_clean_text_t" dest="text"/>
+   <copyField source="clean_text_s" dest="text"/>
+   <copyField source="clean_text_t" dest="text"/>
+   <copyField source="hashtags_s" dest="text"/>
+   <copyField source="urls_s" dest="text"/>
+   <copyField source="mentions_s" dest="text"/>
+   <copyField source="collection_name_s" dest="text"/>
+   <copyField source="domain_s" dest="text"/>
+   <copyField source="title_s" dest="text"/>
+   <copyField source="source_s" dest="text"/>
+   <copyField source="topic_label_ss" dest="text"/>
+   <copyField source="cluster_label_s" dest="text"/>
    <!--<copyField source="cat" dest="text"/>
    <copyField source="name" dest="text"/>
    <copyField source="manu" dest="text"/>

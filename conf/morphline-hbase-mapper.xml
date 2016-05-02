@@ -3,7 +3,7 @@
 
    <!-- The relative or absolute path on the local file system to the morphline configuration file. -->
    <!-- Use relative path "morphlines.conf" for morphlines managed by Cloudera Manager -->
-   <param name="morphlineFile" value="/home/cs5604s16_so/ideal-cs5604s16_test/morphlines.conf"/>
+   <param name="morphlineFile" value="/home/cs5604s16_so/ideal-cs5604s16/morphlines.conf"/>
 
    <!-- The optional morphlineId identifies a morphline if there are multiple morphlines in morphlines.conf -->
    <!--<param name="morphlineId" value="morphline1"/>-->
