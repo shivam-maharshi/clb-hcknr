@@ -56,7 +56,7 @@ $wgDBtype = "mysql";
 $wgDBserver = "localhost";
 $wgDBname = "wiki";
 $wgDBuser = "root";
-$wgDBpassword = "root";
+$wgDBpassword = "";
 
 # MySQL specific settings
 $wgDBprefix = "";
