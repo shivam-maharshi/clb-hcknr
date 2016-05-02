@@ -28,6 +28,8 @@ import org.apache.solr.search.DocIterator;
 import org.apache.solr.search.DocList;
 import org.apache.solr.search.DocListAndSet;
 
+import com.google.common.base.Strings;
+
 /**
  * This Pseudo Relevance Feedback Component is responsible for reformulating the
  * expanded query by analyzing the top-k results of the expanded query. Here we
@@ -50,12 +52,12 @@ public class IDEALPseudoRelevance extends SearchComponent {
 	private boolean verboseMode;
 	private final Map<String, Float> fieldWeights;
 	private static int PRF_TOP_K = 5;
-	private static final String TOPIC_FIELD = "topic";
-	private static final String TOPIC_PROB_FIELD = "topic_probability";
-	private static final String CLUSTER_FIELD = "cluster";
-	private static final String CLUSTER_PROB_FIELD = "cluster_probability";
-	private static final String COLLECTION_FIELD = "collection";
-	private static final String COLLECTION_PROB_FIELD = "collection_probability";
+	private static final String TOPIC_FIELD = "topic_label_s";
+	private static final String TOPIC_PROB_FIELD = "topic_probability_list_fs";
+	private static final String CLUSTER_FIELD = "cluster_label_s"; // StrField
+	private static final String CLUSTER_PROB_FIELD = "cluster_probability_f"; // TrieFloatField
+	private static final String COLLECTION_FIELD = "collection_name_s";
+	private static final String COLLECTION_PROB_FIELD = "classification_relevance_f";
 
 	public IDEALPseudoRelevance() {
 		fieldWeights = new HashMap<>();
@@ -66,12 +68,14 @@ public class IDEALPseudoRelevance extends SearchComponent {
 		// enable debugging - logs
 		String verboseMode = (String) args.get("verbose");
 		this.verboseMode = verboseMode != null && "true".equals(verboseMode.toLowerCase());
-        // load weights
-        String path = (String) args.get("weights-file");
-        if (path == null || path.isEmpty()) {
-            logger.warn(String.format("Initializing IDEAL Ranking Component without weight file and verbose mode [ %s ].", this.verboseMode));
-            return;
-        }
+		// load weights
+		String path = (String) args.get("weights-file");
+		if (path == null || path.isEmpty()) {
+			logger.warn(
+					String.format("Initializing IDEAL Ranking Component without weight file and verbose mode [ %s ].",
+							this.verboseMode));
+			return;
+		}
 		File weightFile = new File(path);
 		if (!weightFile.exists() || !weightFile.isFile()) {
 			logger.error(String.format("IDEAL Ranking Component couldn't access weight file at path [ %s ]. "
@@ -83,7 +87,7 @@ public class IDEALPseudoRelevance extends SearchComponent {
 
 	@Override
 	public void prepare(ResponseBuilder rb) throws IOException {
-
+		// Do nothing here.
 	}
 
 	@Override
@@ -98,24 +102,45 @@ public class IDEALPseudoRelevance extends SearchComponent {
 		// Fetch top-k results from the expanded query.
 		List<Document> topKRes = new ArrayList<Document>();
 		while (docIt.hasNext() && count < PRF_TOP_K) {
-			topKRes.add(rb.req.getSearcher().doc(docIt.nextDoc()));
+			Document document = rb.req.getSearcher().doc(docIt.nextDoc());
+			if (document != null) {
+				topKRes.add(document);
+			}
+			count++;
 		}
 
 		// Create a new query by using the fields from these top-k results.
 		Query expandedQuery = rb.getQuery();
 		BooleanQuery prfQuery = new BooleanQuery();
 		for (Document doc : topKRes) {
-			TermQuery collectionQuery = new TermQuery(new Term("text", doc.get(COLLECTION_FIELD)));
-			collectionQuery.setBoost(expandedQuery.getBoost() * ((Float.valueOf(doc.get(COLLECTION_PROB_FIELD)))));
-			prfQuery.add(collectionQuery, BooleanClause.Occur.SHOULD);
-			TermQuery topicQuery = new TermQuery(new Term("text", doc.get(TOPIC_FIELD)));
-			topicQuery.setBoost(expandedQuery.getBoost() * ((Float.valueOf(doc.get(TOPIC_PROB_FIELD)))));
-			prfQuery.add(topicQuery, BooleanClause.Occur.SHOULD);
-			TermQuery clusterQuery = new TermQuery(new Term("text", doc.get(CLUSTER_FIELD)));
-			clusterQuery.setBoost(expandedQuery.getBoost() * ((Float.valueOf(doc.get(CLUSTER_PROB_FIELD)))));
-			prfQuery.add(clusterQuery, BooleanClause.Occur.SHOULD);
+			// Take relevance from collection field.
+			TermQuery collectionQuery = null;
+			String collectionField = doc.get(COLLECTION_FIELD);
+			String collectionProb = doc.get(COLLECTION_PROB_FIELD);
+			if (!Strings.isNullOrEmpty(collectionField) && !Strings.isNullOrEmpty(collectionProb)) {
+				collectionQuery = new TermQuery(new Term("text", collectionField));
+				collectionQuery.setBoost(expandedQuery.getBoost() * ((Float.valueOf(collectionProb))));
+				prfQuery.add(collectionQuery, BooleanClause.Occur.SHOULD);
+			}
+			// Add relevance from topic field.
+			TermQuery topicQuery = null;
+			String topicField = doc.get(TOPIC_FIELD);
+			String topicProb = doc.get(TOPIC_PROB_FIELD);
+			if (!Strings.isNullOrEmpty(topicField) && !Strings.isNullOrEmpty(topicProb)) {
+				topicQuery = new TermQuery(new Term("text", topicField));
+				topicQuery.setBoost(expandedQuery.getBoost() * ((Float.valueOf(topicProb))));
+				prfQuery.add(topicQuery, BooleanClause.Occur.SHOULD);
+			}
+			// Add relevance from the cluster field.
+			TermQuery clusterQuery = null;
+			String clusterField = doc.get(CLUSTER_FIELD);
+			String clusterProb = doc.get(CLUSTER_PROB_FIELD);
+			if (!Strings.isNullOrEmpty(clusterField) && !Strings.isNullOrEmpty(clusterProb)) {
+				clusterQuery = new TermQuery(new Term("text", clusterField));
+				clusterQuery.setBoost(expandedQuery.getBoost() * ((Float.valueOf(clusterProb))));
+				prfQuery.add(clusterQuery, BooleanClause.Occur.SHOULD);
+			}
 		}
-
 		// Custom scores = tf-idf*1 + topics * tWeight + cluster *cWeight...
 		rb.setQuery(new ScoreBoostingQuery(prfQuery, fieldWeights, verboseMode));
 	}
@@ -157,7 +182,6 @@ public class IDEALPseudoRelevance extends SearchComponent {
 
 		ScoreBoostingQuery(Query subQuery, Map<String, Float> fieldWeights, boolean verboseMode) {
 			super(subQuery);
-
 			this.fieldWeights = fieldWeights;
 			this.verboseMode = verboseMode;
 		}
