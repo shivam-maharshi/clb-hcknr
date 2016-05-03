@@ -71,6 +71,14 @@ $wgDBmysql5 = false;
 $wgMainCacheType = CACHE_NONE;
 $wgMemCachedServers = array();
 
+$wgEnableAPI=true;
+$wgEnableWriteAPI=true;
+$wgEnableSidebarCache=true;
+$wgDisableCounters=true;
+$wgMiserMode=true;
+$wgAntiLockFlags=ALF_NO_LINK_LOCK | ALF_NO_BLOCK_LOCK;
+$wgJobRunRate=0.001;
+
 ## To enable image uploads, make sure the 'images' directory
 ## is writable, then set this to true:
 $wgEnableUploads = false;
