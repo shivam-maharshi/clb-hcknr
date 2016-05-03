@@ -26,6 +26,7 @@ RUN export TERM=xterm
 RUN wget "https://releases.wikimedia.org/mediawiki/1.26/mediawiki-1.26.2.tar.gz"
 RUN tar -xvzf mediawiki-1.26.2.tar.gz
 RUN mv mediawiki-1.26.2 /var/www/wiki
+RUN echo "nameserver 8.8.8.8" >> /etc/resolv.conf # Fixed bug for rkt
 RUN echo "Include /etc/phpmyadmin/apache.conf" >> /etc/apache2/apache2.conf
 RUN echo "ServerName 127.0.0.1" >> /etc/apache2/apache2.conf
 RUN echo "Listen 8080" >> /etc/apache2/ports.conf
