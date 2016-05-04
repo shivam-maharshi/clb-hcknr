@@ -26,16 +26,17 @@ RUN export TERM=xterm
 RUN wget "https://releases.wikimedia.org/mediawiki/1.26/mediawiki-1.26.2.tar.gz"
 RUN tar -xvzf mediawiki-1.26.2.tar.gz
 RUN mv mediawiki-1.26.2 /var/www/wiki
-RUN echo "nameserver 8.8.8.8" >> /etc/resolv.conf # Fixed bug for rkt
+RUN echo "nameserver 8.8.8.8" >> /etc/resolv.conf # For rkt
 RUN echo "Include /etc/phpmyadmin/apache.conf" >> /etc/apache2/apache2.conf
 RUN echo "ServerName 127.0.0.1" >> /etc/apache2/apache2.conf
 RUN rm /etc/apache2/ports.conf
 RUN git clone https://github.com/shivam-maharshi/Docker-MediaWiki
 RUN cp /Docker-MediaWiki/Ubuntu-14.04/ports.conf /etc/apache2/ports.conf
-RUN echo "Listen 8080" >> /etc/apache2/ports.conf
+ENV PORT 8080
+RUN echo "Listen $PORT" >> /etc/apache2/ports.conf
 RUN echo "$cfg['Servers'][$i]['user'] = 'root';" >> /etc/phpmyadmin/config.inc.php
 RUN echo "$cfg['Servers'][$i]['AllowNoPasswordRoot'] = true;" >> /etc/phpmyadmin/config.inc.php
-EXPOSE 8080 3306 80
+EXPOSE $PORT
 #RUN mysql -u root -e 'CREATE DATABASE wiki;'
 #RUN mysql -u root -e 'GRANT ALL PRIVILEGES ON wiki.* TO 'root'@'127.0.0.1';'
 RUN sh Docker-MediaWiki/Ubuntu-14.04/install-mw.sh
