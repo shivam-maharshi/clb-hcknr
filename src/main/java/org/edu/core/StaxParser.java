@@ -39,6 +39,7 @@ public class StaxParser {
 	public static void read(String file) {
 		try {
 			XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+			inputFactory.setProperty(XMLInputFactory.IS_COALESCING, true);
 			InputStream in = new FileInputStream(file);
 			XMLEventReader eventReader = inputFactory.createXMLEventReader(in);
 			boolean inRevisionTag = false;
