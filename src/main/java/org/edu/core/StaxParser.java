@@ -55,43 +55,76 @@ public class StaxParser {
 					inPageTag = true;
 					page = new Page();
 				}
+				// Page tag starts
 				if (inPageTag) {
-					if (startEventIs(event, TITLE)) {
-						event = eventReader.nextEvent();
-						page.setTitle(event.asCharacters().getData());
-					}
-					if (startEventIs(event, NS)) {
-						event = eventReader.nextEvent();
-						page.setNs(Integer.valueOf(event.asCharacters().getData()));
-					}
-					if (startEventIs(event, ID)) {
-						event = eventReader.nextEvent();
-						page.setId(Integer.valueOf(event.asCharacters().getData()));
-					}
-					if (startEventIs(event, REVISION)) {
-						inRevisionTag = true;
-						revision = new Revision();
-						page.setRevision(revision);
-					}
-					if (inRevisionTag) {
+					if (!inRevisionTag) {
+						if (startEventIs(event, TITLE)) {
+							event = eventReader.nextEvent();
+							page.setTitle(event.asCharacters().getData());
+						}
+						if (startEventIs(event, NS)) {
+							event = eventReader.nextEvent();
+							page.setNs(Integer.valueOf(event.asCharacters().getData()));
+						}
 						if (startEventIs(event, ID)) {
 							event = eventReader.nextEvent();
-							revision.setId(Integer.valueOf(event.asCharacters().getData()));
+							page.setId(Integer.valueOf(event.asCharacters().getData()));
 						}
-						if (startEventIs(event, PARENTID)) {
-							event = eventReader.nextEvent();
-							revision.setParentId(Integer.valueOf(event.asCharacters().getData()));
+						if (startEventIs(event, REVISION)) {
+							inRevisionTag = true;
+							revision = new Revision();
+							page.setRevision(revision);
 						}
-						if (startEventIs(event, TIMESTAMP)) {
-							event = eventReader.nextEvent();
-							revision.setTimestamp(event.asCharacters().getData());
-						}
-						if (startEventIs(event, CONTRIBUTOR)) {
-							inContributorTag = true;
-							contributor = new Contributor();
-							revision.setContributor(contributor);
-						}
-						if (inContributorTag) {
+					} else if (inRevisionTag) {
+						// Revision tag starts
+						if (!inContributorTag) {
+							if (startEventIs(event, ID)) {
+								event = eventReader.nextEvent();
+								revision.setId(Integer.valueOf(event.asCharacters().getData()));
+							}
+							if (startEventIs(event, PARENTID)) {
+								event = eventReader.nextEvent();
+								revision.setParentId(Integer.valueOf(event.asCharacters().getData()));
+							}
+							if (startEventIs(event, TIMESTAMP)) {
+								event = eventReader.nextEvent();
+								revision.setTimestamp(event.asCharacters().getData());
+							}
+							if (startEventIs(event, CONTRIBUTOR)) {
+								inContributorTag = true;
+								contributor = new Contributor();
+								revision.setContributor(contributor);
+							}
+							if (startEventIs(event, MINOR)) {
+								event = eventReader.nextEvent();
+								revision.setMinor(event.asCharacters().getData());
+							}
+							if (startEventIs(event, COMMENT)) {
+								event = eventReader.nextEvent();
+								revision.setComment(event.asCharacters().getData());
+							}
+							if (startEventIs(event, MODEL)) {
+								event = eventReader.nextEvent();
+								revision.setModel(event.asCharacters().getData());
+							}
+							if (startEventIs(event, FORMAT)) {
+								event = eventReader.nextEvent();
+								revision.setFormat(event.asCharacters().getData());
+							}
+							if (startEventIs(event, TEXT)) {
+								event = eventReader.nextEvent();
+								revision.setText(event.asCharacters().getData());
+							}
+							if (startEventIs(event, SHA1)) {
+								event = eventReader.nextEvent();
+								revision.setSha1(event.asCharacters().getData());
+							}
+							if (endEventIs(event, REVISION)) {
+								inRevisionTag = false;
+								event = eventReader.nextEvent();
+							}
+						} else if (inContributorTag) {
+							// Contributor tag starts
 							if (startEventIs(event, USERNAME)) {
 								event = eventReader.nextEvent();
 								contributor.setUsername(event.asCharacters().getData());
@@ -104,34 +137,6 @@ public class StaxParser {
 								inContributorTag = false;
 								event = eventReader.nextEvent();
 							}
-						}
-						if (startEventIs(event, MINOR)) {
-							event = eventReader.nextEvent();
-							revision.setMinor(event.asCharacters().getData());
-						}
-						if (startEventIs(event, COMMENT)) {
-							event = eventReader.nextEvent();
-							revision.setComment(event.asCharacters().getData());
-						}
-						if (startEventIs(event, MODEL)) {
-							event = eventReader.nextEvent();
-							revision.setModel(event.asCharacters().getData());
-						}
-						if (startEventIs(event, FORMAT)) {
-							event = eventReader.nextEvent();
-							revision.setFormat(event.asCharacters().getData());
-						}
-						if (startEventIs(event, TEXT)) {
-							event = eventReader.nextEvent();
-							revision.setText(event.asCharacters().getData());
-						}
-						if (startEventIs(event, SHA1)) {
-							event = eventReader.nextEvent();
-							revision.setSha1(event.asCharacters().getData());
-						}
-						if (endEventIs(event, REVISION)) {
-							inRevisionTag = false;
-							event = eventReader.nextEvent();
 						}
 					}
 					if (endEventIs(event, PAGE)) {
