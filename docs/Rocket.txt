@@ -1,0 +1,54 @@
+#Rocket
+“App Container” defines a specification of the facilities surrounding the container.
+rkt implements these facilities as a command line tool.
+The image format defined by appc and used in rkt is the Application Container Image, or ACI. An ACI is a simple tarball bundle of a rootfs (containing all the files needed to execute an application) and an Image Manifest, which defines things like default execution parameters and default resource constraints.
+ACIs can be built with tools like acbuild, actool, or goaci.
+A pod in rkt is conceptually identical to a pod as defined in Kubernetes.  runtime/execution environment (pods)
+A pod is a grouping of one or more app images (ACIs), with some additional metadata optionally applied to the pod as a whole
+a resource constraint (like CPU, I/O, Network) can be applied at the pod level and then forms an “outer bound” for all the applications in the pod.
+By default rkt uses systemd-nspawn to configure the namespaces for an application container.
+systemd-nspawn - “namespace spawn”, which means it only handles process isolation and does not do resource isolation like memory, CPU, etc. 
+init it starts tasks serially, waiting for each to finish loading before moving on to the next. When startup processes end up I/O blocked, this can result in long delays during boot.
+systemd is an init system used by some Linux distributions to bootstrap the user space and manage all processes subsequently
+systemd, a full replacement for init in Linux with concurrent starting of services and other features, used by influential Linux distributions
+Upstart, a full replacement of init designed to start processes asynchronously initiated by Ubuntu.
+cgroups (abbreviated from control groups) is a Linux kernel feature that limits, accounts for, and isolates the resource usage (CPU, memory, disk I/O, network, etc.) of a collection of processes.
+rkt-metadata-services - ?
+rkt’s primary interface is a command-line tool, rkt, which does not require a long running daemon. 
+This architecture allows rkt to be updated in-place without affecting application containers which are currently running
+It also means that levels of privilege can be separated out between different operations.
+
+#CoreOS
+CoreOS uses systemd 
+CoreOS instance uses the underlying operating-system-level virtualization features of the Linux kernel to create and configure multiple containers that perform as isolated Linux systems
+Using CGroup resource partitioning between containers is performed through multiple isolated userspace instances, instead of using a hypervisor and providing full-fledged virtual machines
+CoreOS provides etcd, a daemon that runs across all computers in a cluster and provides a dynamic configuration registry, allowing various configuration data to be easily and reliably shared between the cluster members.
+Beside the configuration management, etcd also provides service discovery by allowing deployed applications to announce themselves and the services they offer.
+etcd is a distributed key value store that provides a reliable way to store data across a cluster of machines. 
+etcd is performed through an exposed REST-based API, which internally uses JSON on top of HTTP
+etcd, etcdctl, fleetd and fleetctl) are written in the Go language
+
+Control Groups are a Linux feature for organizing processes in hierarchical groups and applying resources limits to them.
+Namespace - User namespaces is a feature of Linux that can be used to separate the user IDs and group IDs between the host and containers.
+FileSystem - /var/lib/rkt/pods/[preared/run]/uuid
+Sharing and mounting directories
+Metadata Services - the metadata service exposes the contents of the pod and image manifests as well as a convenient method of looking up annotations - So when it is started, register on this metadata service whenever your service starts, this will provide a way to figure out info about your service.
+No cloud provider native support till now
+OS Supported - Arch Linux, CentOS, Ubuntu, Fedora, RHEL, NixOS, Debian, Vagrant, CoreOS
+CoreOS, etcd, fleet, 
+Pluggable Ip handling using IMAP - cat /etc/rkt/net.d/10-containers.conf, flannel
+Execution in 3 steps - Stage0 (stage1 aci fs, unpack, generate manifest uuid), Stage1 ( creating the necessary cgroups, namespaces and mounts to launch the pod.), Stage2 (runs the fs prepraed in stage 1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
