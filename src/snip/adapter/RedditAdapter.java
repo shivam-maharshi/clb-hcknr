@@ -19,7 +19,7 @@ public class RedditAdapter {
 	public List<Submission> getData(String keyword) {
 		RestClient restClient = new PoliteHttpRestClient();
 		restClient.setUserAgent("bot/1.0 by name");
-		User user = new User(restClient, "shivam-maharshi", "shivam@123");
+		User user = new User(restClient, "shivam-maharshi", "dummy something");
 		try {
 			user.connect();
 		} catch (Exception e) {
