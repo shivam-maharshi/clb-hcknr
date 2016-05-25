@@ -30,7 +30,7 @@ public class YouTubeAdapter {
 //			}).setApplicationName("youtube-cmdline-search-sample").build();
 //
 //			YouTube.Search.List search = youtube.search().list("id,snippet");
-//			String apiKey = "AIzaSyDhyoRlMtPQ-iycAWorrZ16J32s_srdByI";
+//			String apiKey = "";
 //			search.setKey(apiKey);
 //			search.setQ(query);
 //			search.setType("video");
