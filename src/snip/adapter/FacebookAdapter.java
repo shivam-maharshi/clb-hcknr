@@ -21,8 +21,8 @@ public class FacebookAdapter {
 //	public static Configuration createConfiguration() {
 //		ConfigurationBuilder confBuilder = new ConfigurationBuilder();
 //		confBuilder.setDebugEnabled(true);
-//		confBuilder.setOAuthAppId("1006336622766112");
-//		confBuilder.setOAuthAppSecret("2237fbece5d20d2057e0b64f6ebff66e");
+//		confBuilder.setOAuthAppId("");
+//		confBuilder.setOAuthAppSecret("");
 //		confBuilder.setUseSSL(true);
 //		confBuilder.setJSONStoreEnabled(true);
 //		Configuration configuration = confBuilder.build();
