@@ -21,8 +21,8 @@ public class InstagramAdapter {
 //	private static final Token EMPTY_TOKEN = null;
 //
 //	public Object getData(String keyword) {
-//		InstagramService service = new InstagramAuthService().apiKey("922892f48cc345acb42622426d849b35")
-//				.apiSecret("	51f6944211df4b9fb5f8faeac1c58344").callback("https://github.com/shivam-maharshi")
+//		InstagramService service = new InstagramAuthService().apiKey("")
+//				.apiSecret("").callback("https://github.com/shivam-maharshi")
 //				.scope("comments").build();
 //		String authorizationUrl = service.getAuthorizationUrl(EMPTY_TOKEN);
 //		System.out.println(authorizationUrl);
