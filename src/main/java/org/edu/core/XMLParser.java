@@ -9,16 +9,18 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 
-import org.edu.dto.Contributor;
-import org.edu.dto.Page;
-import org.edu.dto.Revision;
+import org.edu.dto.ContributorDto;
+import org.edu.dto.PageDto;
+import org.edu.dto.RevisionDto;
 
 /**
  * Core parsing logic to read Wikipedia XML dumps and pass objects to consumers.
+ * This is a STAX parser.
  * 
+ * @see {@link PageDto}, {@link RevisionDto}, {@link ContributorDto}
  * @author shivam.maharshi
  */
-public class StaxParser {
+public class XMLParser {
 
 	private static final String PAGE = "page";
 	private static final String TITLE = "title";
@@ -45,15 +47,15 @@ public class StaxParser {
 			boolean inRevisionTag = false;
 			boolean inPageTag = false;
 			boolean inContributorTag = false;
-			Page page = null;
-			Revision revision = null;
-			Contributor contributor = null;
+			PageDto page = null;
+			RevisionDto revision = null;
+			ContributorDto contributor = null;
 
 			while (eventReader.hasNext()) {
 				XMLEvent event = eventReader.nextEvent();
 				if (startEventIs(event, PAGE)) {
 					inPageTag = true;
-					page = new Page();
+					page = new PageDto();
 				}
 				// Page tag starts
 				if (inPageTag) {
@@ -72,7 +74,7 @@ public class StaxParser {
 						}
 						if (startEventIs(event, REVISION)) {
 							inRevisionTag = true;
-							revision = new Revision();
+							revision = new RevisionDto();
 							page.setRevision(revision);
 						}
 					} else if (inRevisionTag) {
@@ -92,7 +94,7 @@ public class StaxParser {
 							}
 							if (startEventIs(event, CONTRIBUTOR)) {
 								inContributorTag = true;
-								contributor = new Contributor();
+								contributor = new ContributorDto();
 								revision.setContributor(contributor);
 							}
 							if (startEventIs(event, MINOR)) {
