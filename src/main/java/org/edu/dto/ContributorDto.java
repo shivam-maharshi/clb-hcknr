@@ -5,7 +5,7 @@ package org.edu.dto;
  * 
  * @author shivam.maharshi
  */
-public class Contributor {
+public class ContributorDto {
 
 	private String username;
 	private int id;

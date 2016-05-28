@@ -3,15 +3,15 @@ package org.edu.dto;
 /**
  * DTO for Page tag in Wikipedia XML dumps.
  * 
- * @see {@link Revision}
+ * @see {@link RevisionDto}
  * @author shivam.maharshi
  */
-public class Page {
+public class PageDto {
 
 	private String title;
 	private int ns;
 	private int id;
-	private Revision revision;
+	private RevisionDto revision;
 
 	public String getTitle() {
 		return title;
@@ -37,11 +37,11 @@ public class Page {
 		this.id = id;
 	}
 
-	public Revision getRevision() {
+	public RevisionDto getRevision() {
 		return revision;
 	}
 
-	public void setRevision(Revision revision) {
+	public void setRevision(RevisionDto revision) {
 		this.revision = revision;
 	}
 

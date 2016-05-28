@@ -3,15 +3,15 @@ package org.edu.dto;
 /**
  * DTO for Revision tag in Wikipedia XML dumps.
  * 
- * @see {@link Contributor}
+ * @see {@link ContributorDto}
  * @author shivam.maharshi
  */
-public class Revision {
+public class RevisionDto {
 
 	private int id;
 	private int parentId;
 	private String timestamp;
-	private Contributor contributor;
+	private ContributorDto contributor;
 	private String minor;
 	private String comment;
 	private String model;
@@ -43,11 +43,11 @@ public class Revision {
 		this.timestamp = timestamp;
 	}
 
-	public Contributor getContributor() {
+	public ContributorDto getContributor() {
 		return contributor;
 	}
 
-	public void setContributor(Contributor contributor) {
+	public void setContributor(ContributorDto contributor) {
 		this.contributor = contributor;
 	}
 
