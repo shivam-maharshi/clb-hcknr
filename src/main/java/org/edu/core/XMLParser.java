@@ -145,7 +145,7 @@ public class XMLParser {
 						inPageTag = false;
 						event = eventReader.nextEvent();
 						// Consumer here.
-						System.out.println(page);
+						XMLConsumer.consume(page);
 					}
 				}
 			}

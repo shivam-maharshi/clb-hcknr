@@ -16,16 +16,20 @@ repositories {
 
 dependencies {
     compile group: 'commons-collections', name: 'commons-collections', version: '3.2'
-    compile group: 'org.hibernate', name: 'hibernate-core', version: '4.3.5.Final'
-    compile group: 'org.hibernate', name: 'hibernate-validator', version: '4.3.5.Final'
-    compile group: 'org.hibernate.common', name: 'hibernate-commons-annotations', version: '4.3.5.Final', classifier: 'tests'
-    compile group: 'org.hibernate.javax.persistence', name: 'hibernate-jpa-2.0-api', version: '1.0.1.Final'
-    compile group: 'org.hibernate', name: 'hibernate-entitymanager', version: '4.3.5.Final'
     compile group: 'javax.validation', name: 'validation-api', version: '1.0.0.GA'
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.6.4'
-    compile group: 'org.jboss.logging', name: 'jboss-logging', version: '3.1.0.CR2'
+    compile ('org.jboss.logging:jboss-logging:3.1.0.CR2')
     compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.6.4'
     compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.10'
+    
+    compile group: 'org.hibernate.javax.persistence', name: 'hibernate-jpa-2.1-api', version: '1.0.0.Final'
+    compile group: 'org.hibernate.common', name: 'hibernate-commons-annotations', version: '4.0.5.Final'
+    compile group: 'org.hibernate', name: 'hibernate-core', version: '4.3.8.Final'
+    compile ('org.hibernate:hibernate-entitymanager:4.0.1.Final') {
+    	exclude group: 'org.hibernate.javax.persistence', module: 'hibernate-jpa-2.0-api'
+    }
+    compile group: 'org.hibernate', name: 'hibernate-validator', version: '4.3.2.Final'
+    
     testCompile group: 'junit', name: 'junit', version: '4.+'
 }
 

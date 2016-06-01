@@ -43,7 +43,7 @@ public class Text implements Serializable {
 		this.oldId = oldId;
 	}
 
-	@Column(name = "old_text", unique = false, nullable = false)
+	@Column(name = "old_text", unique = false, nullable = false, length =	16777215)
 	public String getOldText() {
 		return oldText;
 	}

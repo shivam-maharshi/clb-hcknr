@@ -112,7 +112,7 @@ public class Revision implements Serializable {
 		this.userText = userText;
 	}
 
-	@Column(name = "rev_timestamp", unique = false, nullable = false)
+	@Column(name = "rev_timestamp", unique = false, nullable = false, length=32)
 	public String getTimestamp() {
 		return timestamp;
 	}
@@ -166,7 +166,7 @@ public class Revision implements Serializable {
 		this.revSha1 = revSha1;
 	}
 
-	@Column(name = "rev_content_model", unique = false, nullable = false)
+	@Column(name = "rev_content_model", unique = false, nullable = true)
 	public String getRevContentMode() {
 		return revContentMode;
 	}
@@ -175,7 +175,7 @@ public class Revision implements Serializable {
 		this.revContentMode = revContentMode;
 	}
 
-	@Column(name = "rev_content_format", unique = false, nullable = false)
+	@Column(name = "rev_content_format", unique = false, nullable = true)
 	public String getRevContentFormat() {
 		return revContentFormat;
 	}

@@ -15,12 +15,10 @@ public class DBDumper {
 		session.save(r);
 		session.save(t);
 		session.getTransaction().commit();
+		session.flush();
+		session.close();
 		System.out.println("Entry made");
 		return true;
-	}
-	
-	public static void main(String[] args) {
-		
 	}
 
 }

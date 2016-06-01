@@ -13,7 +13,7 @@ import javax.persistence.Table;
  * @author shivam.maharshi
  */
 @Entity
-@Table (name="Page")
+@Table (name="page")
 public class Page implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
@@ -119,7 +119,7 @@ public class Page implements Serializable {
 		this.pageRandom = pageRandom;
 	}
 
-	@Column(name = "page_touched", unique = false, nullable = false)
+	@Column(name = "page_touched", unique = false, nullable = false, length=32)
 	public String getTouched() {
 		return touched;
 	}
@@ -128,7 +128,7 @@ public class Page implements Serializable {
 		this.touched = touched;
 	}
 
-	@Column(name = "page_links_updated", unique = false, nullable = false)
+	@Column(name = "page_links_updated", unique = false, nullable = true)
 	public String getPageLinksUpdated() {
 		return pageLinksUpdated;
 	}
@@ -155,7 +155,7 @@ public class Page implements Serializable {
 		this.pageLen = pageLen;
 	}
 
-	@Column(name = "page_content_mode", unique = false, nullable = false)
+	@Column(name = "page_content_mode", unique = false, nullable = true)
 	public String getPageContentModel() {
 		return pageContentModel;
 	}
@@ -164,7 +164,7 @@ public class Page implements Serializable {
 		this.pageContentModel = pageContentModel;
 	}
 
-	@Column(name = "page_lang", unique = false, nullable = false)
+	@Column(name = "page_lang", unique = false, nullable = true)
 	public String getPageLang() {
 		return pageLang;
 	}

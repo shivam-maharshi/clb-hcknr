@@ -27,8 +27,9 @@ public class Mapper {
 		p.setPageLinksUpdated(null);
 		p.setPageNamespace(pd.getNs());
 		p.setPageRandom(Math.random()); // TODO: ?
-		p.setPageTitle(pd.getTitle());
-		p.setTouched("0000000000000000000000000000"); // TODO:?
+		p.setPageTitle(pd.getTitle().replace(" ", "_"));
+		p.setTouched("0"); // TODO:?
+		p.setPageRestrictions("");
 		return p;
 	}
 
@@ -47,7 +48,7 @@ public class Mapper {
 		r.setRevSha1(rd.getSha1());
 		r.setRevTextId(rd.getId());
 		r.setRevUser(rd.getContributor().getId());
-		r.setTimestamp(rd.getTimestamp());
+		r.setTimestamp(""); // TODO: Correct
 		r.setUserText(rd.getContributor().getUsername());
 		return r;
 	}
