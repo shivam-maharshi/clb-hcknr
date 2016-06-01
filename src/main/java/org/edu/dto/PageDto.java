@@ -11,6 +11,7 @@ public class PageDto {
 	private String title;
 	private int ns;
 	private int id;
+	private int length;
 	private RevisionDto revision;
 
 	public String getTitle() {
@@ -45,9 +46,18 @@ public class PageDto {
 		this.revision = revision;
 	}
 
+	public int getLength() {
+		return length;
+	}
+
+	public void setLength(int length) {
+		this.length = length;
+	}
+
 	@Override
 	public String toString() {
-		return "Page [title=" + title + ", ns=" + ns + ", id=" + id + ", revision=" + revision + "]";
+		return "PageDto [title=" + title + ", ns=" + ns + ", id=" + id + ", length=" + length + ", revision=" + revision
+				+ "]";
 	}
-	
+
 }

@@ -23,12 +23,12 @@ public class Mapper {
 		p.setPageIsRedirect(0);
 		p.setPageLang(null);
 		p.setPageLatest(rd.getId());
-		p.setPageLen(14); //TODO: Correct.
+		p.setPageLen(pd.getLength());
 		p.setPageLinksUpdated(null);
 		p.setPageNamespace(pd.getNs());
-		p.setPageRandom(Math.random()); // TODO: ?
+		p.setPageRandom(Math.random());
 		p.setPageTitle(pd.getTitle().replace(" ", "_"));
-		p.setTouched("0"); // TODO:?
+		p.setTouched("0"); // TODO:? Ignoring last touched information.
 		p.setPageRestrictions("");
 		return p;
 	}
@@ -37,7 +37,7 @@ public class Mapper {
 		Revision r = new Revision();
 		RevisionDto rd = pd.getRevision();
 		r.setDeleted(0);
-		r.setMinorEdit(0); // TODO: rd.getMinorEdit
+		r.setMinorEdit(0); // TODO: Always setting 0. Not important.
 		r.setRevComment(rd.getComment());
 		r.setRevContentFormat(rd.getFormat());
 		r.setRevContentMode(rd.getModel());

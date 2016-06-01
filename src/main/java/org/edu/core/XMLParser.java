@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -37,6 +38,7 @@ public class XMLParser {
 	private static final String FORMAT = "format";
 	private static final String TEXT = "text";
 	private static final String SHA1 = "sha1";
+	private static final String BYTES = "bytes";
 
 	public static void read(String file) {
 		try {
@@ -114,6 +116,7 @@ public class XMLParser {
 								revision.setFormat(event.asCharacters().getData());
 							}
 							if (startEventIs(event, TEXT)) {
+								page.setLength(Integer.valueOf(event.asStartElement().getAttributeByName(new QName(BYTES)).getValue()));
 								event = eventReader.nextEvent();
 								revision.setText(event.asCharacters().getData());
 							}
@@ -145,7 +148,9 @@ public class XMLParser {
 						inPageTag = false;
 						event = eventReader.nextEvent();
 						// Consumer here.
-						XMLConsumer.consume(page);
+						if (!XMLConsumer.consume(page)) {
+							System.out.println("Entry failed for page: " + page.toString());
+						}
 					}
 				}
 			}
