@@ -6,9 +6,14 @@ import org.edu.persistence.Text;
 import org.edu.utils.HibernateUtil;
 import org.hibernate.Session;
 
+/**
+ * Dumps the data into DB using Hibernate.
+ * 
+ * @author shivam.maharshi
+ */
 public class DBDumper {
-	
-	public static boolean add(Page p, Revision r, Text t) {
+
+	public static boolean add(Page p, Revision r, Text t) throws Exception {
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 		session.save(p);

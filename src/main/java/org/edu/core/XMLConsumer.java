@@ -12,7 +12,7 @@ import org.edu.mapper.Mapper;
  */
 public class XMLConsumer {
 	
-	public static boolean consume(PageDto pd) {
+	public static boolean consume(PageDto pd) throws Exception {
 		return DBDumper.add(Mapper.mapP(pd), Mapper.mapR(pd), Mapper.mapT(pd));
 	}
 	

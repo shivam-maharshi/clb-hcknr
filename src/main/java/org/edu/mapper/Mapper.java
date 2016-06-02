@@ -14,7 +14,7 @@ import org.edu.persistence.Text;
  */
 public class Mapper {
 
-	public static Page mapP(PageDto pd) {
+	public static Page mapP(PageDto pd) throws Exception {
 		Page p = new Page();
 		RevisionDto rd = pd.getRevision();
 		p.setPageContentModel(rd.getModel());
@@ -33,7 +33,7 @@ public class Mapper {
 		return p;
 	}
 
-	public static Revision mapR(PageDto pd) {
+	public static Revision mapR(PageDto pd) throws Exception {
 		Revision r = new Revision();
 		RevisionDto rd = pd.getRevision();
 		r.setDeleted(0);
@@ -53,7 +53,7 @@ public class Mapper {
 		return r;
 	}
 
-	public static Text mapT(PageDto pd) {
+	public static Text mapT(PageDto pd) throws Exception {
 		Text t = new Text();
 		RevisionDto rd = pd.getRevision();
 		t.setOldId(rd.getId());
