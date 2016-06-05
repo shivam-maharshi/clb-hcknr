@@ -1,0 +1,3 @@
+Total Pages: 400,000
+
+Simple Brute Force: 221 (mins), Failed: 90,000
