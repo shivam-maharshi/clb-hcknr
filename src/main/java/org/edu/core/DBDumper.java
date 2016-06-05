@@ -1,29 +1,52 @@
 package org.edu.core;
 
-import org.edu.persistence.Page;
-import org.edu.persistence.Revision;
-import org.edu.persistence.Text;
-import org.edu.utils.HibernateUtil;
+import org.edu.dto.PageDto;
+import org.edu.mapper.Mapper;
 import org.hibernate.Session;
+import org.hibernate.exception.ConstraintViolationException;
 
 /**
  * Dumps the data into DB using Hibernate.
  * 
  * @author shivam.maharshi
  */
-public class DBDumper {
+public class DBDumper implements Runnable {
 
-	public static boolean add(Page p, Revision r, Text t) throws Exception {
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		session.beginTransaction();
-		session.save(p);
-		session.save(r);
-		session.save(t);
-		session.getTransaction().commit();
-		session.flush();
-		session.close();
-		System.out.println("Entry made");
-		return true;
+	private Session s;
+	private PageDto pd;
+	private boolean isExecuting;
+
+	public DBDumper(Session session) {
+		this.s = session;
+	}
+	
+	public void setConsumerObj(PageDto pd) {
+		this.pd = pd;
+	}
+	
+	public boolean isExecuting() {
+		return isExecuting;
+	}
+
+	@Override
+	public void run() {
+		try {
+			isExecuting = true;
+			s.beginTransaction();
+			s.save(Mapper.mapP(pd));
+			s.save(Mapper.mapR(pd));
+			s.save(Mapper.mapT(pd));
+			s.getTransaction().commit();
+			s.flush();
+		} catch (Exception e) {
+			if (e instanceof ConstraintViolationException) {
+				XMLParser.addFailedTitle("V | " + pd.getTitle());
+			} else {
+				XMLParser.addFailedTitle(pd.getTitle());
+			}
+		} finally {
+			isExecuting = false;
+		}
 	}
 
 }

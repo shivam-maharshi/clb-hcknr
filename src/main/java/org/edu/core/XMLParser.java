@@ -49,6 +49,14 @@ public class XMLParser {
 	private static final String MEDIAWIKI = "mediawiki";
 	private static final List<String> failedTitles = new ArrayList<String>();
 	private static final List<String> voilationTitles = new ArrayList<String>();
+	
+	public static void addFailedTitle(String title) {
+		failedTitles.add(title);
+	}
+	
+	public static void addVoilationTitle(String title) {
+		voilationTitles.add(title);
+	}
 
 	public static void read(String file, String fail) {
 		try {
@@ -184,12 +192,10 @@ public class XMLParser {
 					}
 					if (endEventIs(event, PAGE)) {
 						inPageTag = false;
-						event = eventReader.nextEvent();
+						// event = eventReader.nextEvent(); - TODO: For speed.
 						// Consumer here.
 						try {
-							if (!XMLConsumer.consume(page)) {
-								failedTitles.add(page.getTitle());
-							}
+							ConsumerQueue.add(page);
 						} catch (Exception e) {
 							if(e instanceof ConstraintViolationException) {
 								voilationTitles.add("V | " + page.getTitle());
@@ -197,11 +203,11 @@ public class XMLParser {
 								failedTitles.add(page.getTitle());
 								continue;
 							}
-							try {
-								HibernateUtil.closeSessionFactory();
-							} catch (Exception e1) {
-								e1.printStackTrace();
-							}
+//							try {
+//								HibernateUtil.closeSessionFactory();
+//							} catch (Exception e1) {
+//								e1.printStackTrace();
+//							}
 						}
 					}
 				}
