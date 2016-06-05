@@ -6,11 +6,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.RollbackException;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.XMLEvent;
 
 import org.edu.dto.ContributorDto;
@@ -19,6 +19,7 @@ import org.edu.dto.RevisionDto;
 import org.edu.utils.FileUtil;
 import org.edu.utils.HibernateUtil;
 import org.hibernate.HibernateException;
+import org.hibernate.exception.ConstraintViolationException;
 
 /**
  * Core parsing logic to read Wikipedia XML dumps and pass objects to consumers.
@@ -52,9 +53,10 @@ public class XMLParser {
 	public static void read(String file, String fail) {
 		try {
 			XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+			// To read the complete big data in text. Otherwise it doesn't.
 			inputFactory.setProperty(XMLInputFactory.IS_COALESCING, true);
 			InputStream in = new FileInputStream(file);
-			XMLEventReader eventReader = inputFactory.createXMLEventReader(in);
+			XMLEventReader eventReader = inputFactory.createXMLEventReader(in, "UTF-8");
 			boolean inRevisionTag = false;
 			boolean inPageTag = false;
 			boolean inContributorTag = false;
@@ -67,6 +69,11 @@ public class XMLParser {
 				if(endEventIs(event, MEDIAWIKI)) {
 					FileUtil.write(failedTitles, fail);
 					FileUtil.write(voilationTitles, fail);
+					try {
+						HibernateUtil.closeSessionFactory();
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
 					break;
 				}
 				if (startEventIs(event, PAGE)) {
@@ -78,14 +85,17 @@ public class XMLParser {
 					if (!inRevisionTag) {
 						if (startEventIs(event, TITLE)) {
 							event = eventReader.nextEvent();
+							if(!endEventIs(event, TITLE))
 							page.setTitle(event.asCharacters().getData());
 						}
 						if (startEventIs(event, NS)) {
 							event = eventReader.nextEvent();
+							if(!endEventIs(event, NS))
 							page.setNs(Integer.valueOf(event.asCharacters().getData()));
 						}
 						if (startEventIs(event, ID)) {
 							event = eventReader.nextEvent();
+							if(!endEventIs(event, ID))
 							page.setId(Integer.valueOf(event.asCharacters().getData()));
 						}
 						if (startEventIs(event, REVISION)) {
@@ -98,14 +108,17 @@ public class XMLParser {
 						if (!inContributorTag) {
 							if (startEventIs(event, ID)) {
 								event = eventReader.nextEvent();
+								if(!endEventIs(event, ID))
 								revision.setId(Integer.valueOf(event.asCharacters().getData()));
 							}
 							if (startEventIs(event, PARENTID)) {
 								event = eventReader.nextEvent();
+								if(!endEventIs(event, PARENTID))
 								revision.setParentId(Integer.valueOf(event.asCharacters().getData()));
 							}
 							if (startEventIs(event, TIMESTAMP)) {
 								event = eventReader.nextEvent();
+								if(!endEventIs(event, TIMESTAMP))
 								revision.setTimestamp(event.asCharacters().getData());
 							}
 							if (startEventIs(event, CONTRIBUTOR)) {
@@ -115,27 +128,36 @@ public class XMLParser {
 							}
 							if (startEventIs(event, MINOR)) {
 								event = eventReader.nextEvent();
-								revision.setMinor(event.asCharacters().getData());
+								if(!endEventIs(event, MINOR))
+									revision.setMinor(event.asCharacters().getData());
 							}
 							if (startEventIs(event, COMMENT)) {
 								event = eventReader.nextEvent();
+								if(!endEventIs(event, COMMENT))
 								revision.setComment(event.asCharacters().getData());
 							}
 							if (startEventIs(event, MODEL)) {
 								event = eventReader.nextEvent();
+								if(!endEventIs(event, MODEL))
 								revision.setModel(event.asCharacters().getData());
 							}
 							if (startEventIs(event, FORMAT)) {
 								event = eventReader.nextEvent();
+								if(!endEventIs(event, FORMAT))
 								revision.setFormat(event.asCharacters().getData());
 							}
 							if (startEventIs(event, TEXT)) {
-								page.setLength(Integer.valueOf(event.asStartElement().getAttributeByName(new QName(BYTES)).getValue()));
+								Attribute att =  event.asStartElement().getAttributeByName(new QName(BYTES));
+								if(att!=null) {
+									page.setLength(Integer.valueOf(att.getValue()));
+								}
 								event = eventReader.nextEvent();
+								if(!endEventIs(event, TEXT))
 								revision.setText(event.asCharacters().getData());
 							}
 							if (startEventIs(event, SHA1)) {
 								event = eventReader.nextEvent();
+								if(!endEventIs(event, SHA1))
 								revision.setSha1(event.asCharacters().getData());
 							}
 							if (endEventIs(event, REVISION)) {
@@ -146,10 +168,12 @@ public class XMLParser {
 							// Contributor tag starts
 							if (startEventIs(event, USERNAME)) {
 								event = eventReader.nextEvent();
+								if(!endEventIs(event, USERNAME))
 								contributor.setUsername(event.asCharacters().getData());
 							}
 							if (startEventIs(event, ID)) {
 								event = eventReader.nextEvent();
+								if(!endEventIs(event, ID))
 								contributor.setId(Integer.valueOf(event.asCharacters().getData()));
 							}
 							if (endEventIs(event, CONTRIBUTOR)) {
@@ -167,7 +191,7 @@ public class XMLParser {
 								failedTitles.add(page.getTitle());
 							}
 						} catch (Exception e) {
-							if(e instanceof RollbackException) {
+							if(e instanceof ConstraintViolationException) {
 								voilationTitles.add("V | " + page.getTitle());
 							} else {
 								failedTitles.add(page.getTitle());
@@ -190,7 +214,9 @@ public class XMLParser {
 	}
 
 	public static void main(String[] args) throws HibernateException, Exception {
-			read("WikiDump.xml", "failed.txt");
+		long ts = System.currentTimeMillis();
+			read("C:/Users/Sam/Downloads/elwiki-20160501-pages-meta-history.xml", "failed.txt");
+			System.out.println("Time taken (in mins) : "+(System.currentTimeMillis() - ts)/60000);
 	}
 
 	private static boolean startEventIs(XMLEvent event, String name) {
