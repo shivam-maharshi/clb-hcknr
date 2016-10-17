@@ -9,6 +9,9 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.javacoders.websocketizer.InputParam;
+import com.javacoders.websocketizer.RequestContext;
+import com.javacoders.websocketizer.RequestHandler;
 import com.javacoders.websocketizer.ServiceBlueprint;
 
 import javax.ws.rs.Path;
@@ -28,11 +31,11 @@ public class ServiceExtractor {
         String dir = ".\\src\\main\\java\\com\\javacoders\\service\\rs";
         File projectDir = new File(dir);
         ServiceExtractor extractor = new ServiceExtractor();
-        extractor.extractBlueprints(projectDir);
+        Collection<ServiceBlueprint> blueprints = extractor.extractBlueprints(projectDir);
     }
 
     private Collection<ServiceBlueprint> extractBlueprints(File projectDir) {
-        List<ServiceBlueprint> blueprints = new ArrayList<>();
+        final List<ServiceBlueprint> result = new ArrayList<>();
 
         new DirExplorer((level, path, file) -> path.endsWith(".java"), (level, path, file) -> {
             System.out.println(path);
@@ -41,7 +44,9 @@ public class ServiceExtractor {
                     private boolean isRestService = false;
 
                     private String serviceUrl;
-                    private StringBuilder classNameBuilder = new StringBuilder();
+                    private String packageName;
+
+                    Collection<ServiceBlueprint> blueprints = new ArrayList<>();
 
                     @Override
                     public void visit(ClassOrInterfaceDeclaration n, Object arg) {
@@ -51,7 +56,11 @@ public class ServiceExtractor {
                             isRestService = true;
                             serviceUrl = extractFilePath(pathAnnotation.get());
 //                            System.out.println(serviceUrl);
-                            classNameBuilder.append(n.getNameExpr());
+                            for (ServiceBlueprint blueprint : blueprints) {
+                                blueprint.setUrl(serviceUrl);
+                                blueprint.setRequestContext(new RequestContext(packageName + "." + n.getName()));
+                                result.add(blueprint);
+                            }
 //                            System.out.println(classNameBuilder.toString());
                         }
                     }
@@ -59,21 +68,21 @@ public class ServiceExtractor {
                     @Override
                     public void visit(PackageDeclaration n, Object arg) {
                         super.visit(n, arg);
-                        classNameBuilder.append(n.getPackageName()).append(".");
+                        packageName = n.getPackageName();
                     }
 
                     @Override
                     public void visit(MethodDeclaration n, Object arg) {
                         super.visit(n, arg);
-                        ServiceBlueprint blueprint = new ServiceBlueprint();
-//                        System.out.println(n.getName());
+                        ServiceBlueprint blueprint = new ServiceBlueprint(null, new ArrayList<>(), new RequestHandler(n.getName()), null);
+                        blueprints.add(blueprint);
                     }
                 }.visit(JavaParser.parse(file), null);
             } catch (ParseException | IOException e) {
                 new RuntimeException(e);
             }
         }).explore(projectDir);
-        return blueprints;
+        return result;
     }
 
     private Optional<AnnotationExpr> isRESTService(ClassOrInterfaceDeclaration declaration) {
