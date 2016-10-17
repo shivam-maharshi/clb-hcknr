@@ -7,6 +7,19 @@ package com.javacoders.websocketizer;
  */
 public class RequestContext {
 
-  Class instance;
+	private Class instance;
+
+	public RequestContext(Class instance) {
+		super();
+		this.instance = instance;
+	}
+
+	public Class getInstance() {
+		return instance;
+	}
+
+	public void setInstance(Class instance) {
+		this.instance = instance;
+	}
 
 }

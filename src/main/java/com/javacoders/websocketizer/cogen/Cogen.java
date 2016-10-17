@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.lang.model.element.Modifier;
 
+import com.javacoders.websocketizer.ServiceBlueprint;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
@@ -15,11 +16,7 @@ import com.squareup.javapoet.TypeSpec;
  */
 public class Cogen {
 
-	public static void main(String[] args) {
-		generate();
-	}
-
-	public static void generate() {
+	public static void generate(ServiceBlueprint blueprint) {
 		MethodSpec main = MethodSpec.methodBuilder("main").addModifiers(Modifier.PUBLIC, Modifier.STATIC)
 				.returns(void.class).addParameter(String[].class, "args")
 				.addStatement("$T.out.println($S)", System.class, "Hello, JavaPoet!").build();
@@ -34,6 +31,10 @@ public class Cogen {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static void main(String[] args) {
+		generate(null);
 	}
 
 }

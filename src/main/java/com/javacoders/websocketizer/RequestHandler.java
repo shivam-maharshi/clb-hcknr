@@ -9,6 +9,19 @@ import java.lang.reflect.Method;
  */
 public class RequestHandler {
 
-  Method method;
+	private Method method;
+
+	public RequestHandler(Method method) {
+		super();
+		this.method = method;
+	}
+
+	public Method getMethod() {
+		return method;
+	}
+
+	public void setMethod(Method method) {
+		this.method = method;
+	}
 
 }
