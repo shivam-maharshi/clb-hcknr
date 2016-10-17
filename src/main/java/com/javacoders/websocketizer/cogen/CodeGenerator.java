@@ -61,10 +61,17 @@ public class CodeGenerator {
 				.returns(void.class).addParameter(Session.class, "session")
 				.addStatement("$T.out.println($S)", System.class, "WebSocket Opened!").build();
 
+		// String[] packageSegements = sb.getRequestContext().getInstance().split("\\.");
+		String className = sb.getRequestContext().getInstance();
+		String methodName = sb.getRequestHandler().getMethod();
+
 		MethodSpec onMessage = MethodSpec.methodBuilder("onMessage").addAnnotation(OnMessage.class)
 				.addException(IOException.class).addModifiers(Modifier.PUBLIC).returns(void.class)
-				.addParameter(String.class, "message").addStatement("session.getBasicRemote().sendText($S)", "Hello!")
-				.addParameter(Session.class, "session").build();
+				.addException(InstantiationException.class).addException(IllegalAccessException.class)
+				.addParameter(String.class, "message")
+				.addStatement("String output = " + className + ".class.newInstance()." + methodName + "()")
+				.addStatement("session.getBasicRemote().sendText(output)").addParameter(Session.class, "session")
+				.build();
 
 		MethodSpec onClose = MethodSpec.methodBuilder("onClose").addAnnotation(OnClose.class)
 				.addModifiers(Modifier.PUBLIC).returns(void.class).addParameter(CloseReason.class, "reason")
@@ -89,8 +96,8 @@ public class CodeGenerator {
 
 	public static void main(String[] args) {
 		String url = "/hello";
-		RequestHandler rh = new RequestHandler(null);
-		RequestContext rc = new RequestContext(null);
+		RequestHandler rh = new RequestHandler("hello");
+		RequestContext rc = new RequestContext("com.javacoders.service.rs.RestService");
 		ServiceBlueprint sb = new ServiceBlueprint(url, null, rh, rc);
 		generate(sb);
 	}

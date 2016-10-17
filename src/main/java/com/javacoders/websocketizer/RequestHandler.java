@@ -1,7 +1,5 @@
 package com.javacoders.websocketizer;
 
-import java.lang.reflect.Method;
-
 /**
  * Represents a request handler for a method uniquely identified by a URL.
  * 
@@ -9,18 +7,18 @@ import java.lang.reflect.Method;
  */
 public class RequestHandler {
 
-	private Method method;
+	private String method;
 
-	public RequestHandler(Method method) {
+	public RequestHandler(String method) {
 		super();
 		this.method = method;
 	}
 
-	public Method getMethod() {
+	public String getMethod() {
 		return method;
 	}
 
-	public void setMethod(Method method) {
+	public void setMethod(String method) {
 		this.method = method;
 	}
 
