@@ -34,7 +34,7 @@ public class ServiceExtractor {
         Collection<ServiceBlueprint> blueprints = extractor.extractBlueprints(projectDir);
     }
 
-    private Collection<ServiceBlueprint> extractBlueprints(File projectDir) {
+    public Collection<ServiceBlueprint> extractBlueprints(File projectDir) {
         final List<ServiceBlueprint> result = new ArrayList<>();
 
         new DirExplorer((level, path, file) -> path.endsWith(".java"), (level, path, file) -> {

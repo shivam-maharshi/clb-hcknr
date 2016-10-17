@@ -1,13 +1,26 @@
 apply plugin: 'java'
+apply plugin: 'application'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 version = '1.0'
 
+task fatJar(type: Jar) {
+	manifest {
+        attributes 'Implementation-Title': 'WebSocketizer',
+        	'Implementation-Version': 1.0,
+        	'Main-Class': 'com.javacoders.websocketizer.client.ConsoleClient'
+    }
+    baseName = project.name
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
 repositories {
     mavenCentral()
 }
+
 
 dependencies {
 	compile group: 'com.squareup', name: 'javapoet', version: '1.7.0'
