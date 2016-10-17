@@ -8,14 +8,16 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 
+/**
+ * Code generator.
+ * 
+ * @author shivam.maharshi
+ */
 public class Cogen {
 
 	public static void main(String[] args) {
-		// System.out.println("Hello, JavaPoet!");
 		generate();
 	}
-	
-	
 
 	public static void generate() {
 		MethodSpec main = MethodSpec.methodBuilder("main").addModifiers(Modifier.PUBLIC, Modifier.STATIC)
