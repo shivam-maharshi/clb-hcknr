@@ -1,6 +1,9 @@
 package com.javacoders.websocketizer.cogen;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import com.google.gson.Gson;
 
 /**
  * Hold the utils methods.
@@ -10,11 +13,13 @@ import java.util.List;
 public class Util {
   
   public static List<Object> parseMessage(String message) {
-    return null;
+    WSRequest request = new Gson().fromJson(message, WSRequest.class);
+    List<Object> params = new ArrayList<Object>();
+    return params;
   }
   
-  public static String getJson(Object o) {
-    return "";
+  public static String getJson(Object obj) {
+    return new Gson().toJson(obj);
   }
 
 }
