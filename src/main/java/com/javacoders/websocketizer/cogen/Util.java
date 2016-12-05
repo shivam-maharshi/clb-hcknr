@@ -1,6 +1,6 @@
 package com.javacoders.websocketizer.cogen;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * Hold the utils methods.
@@ -9,8 +9,12 @@ import java.util.Map;
  */
 public class Util {
   
-  public static String parseMessage(String message) {
+  public static List<Object> parseMessage(String message) {
     return null;
+  }
+  
+  public static String getJson(Object o) {
+    return "";
   }
 
 }

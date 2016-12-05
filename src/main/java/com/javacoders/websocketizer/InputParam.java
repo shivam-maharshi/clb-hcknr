@@ -11,12 +11,14 @@ public class InputParam {
   private String id;
   // Used as the method variable name identifier. 
 	private String name;
+	private String dataType;
 	private ParamType type;
 
-	public InputParam(String id, String name, ParamType type) {
+	public InputParam(String id, String name, String dataType, ParamType type) {
 		super();
 		this.id = id;
 		this.name = name;
+		this.dataType = dataType;
 		this.type = type;
 	}
 	
@@ -35,8 +37,16 @@ public class InputParam {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	public String getDataType() {
+    return dataType;
+  }
 
-	public ParamType getType() {
+  public void setDataType(String dataType) {
+    this.dataType = dataType;
+  }
+
+  public ParamType getType() {
 		return type;
 	}
 

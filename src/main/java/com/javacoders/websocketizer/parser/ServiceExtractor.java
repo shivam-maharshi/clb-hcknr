@@ -20,6 +20,8 @@ import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
 import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.type.ReferenceType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.javacoders.websocketizer.InputParam;
 import com.javacoders.websocketizer.MethodType;
@@ -75,22 +77,26 @@ public class ServiceExtractor {
           @Override
           public void visit(MethodDeclaration n, Object arg) {
             super.visit(n, arg);
-            String methodUrl = "";
-            List<MethodType> methodTypes = new ArrayList<>();
-            List<AnnotationExpr> anotations = n.getAnnotations();
-            for (AnnotationExpr annotation : anotations) {
-              if (annotation instanceof MarkerAnnotationExpr) {
-                populateMethodTypes((MarkerAnnotationExpr) annotation, methodTypes);
-              } else if (annotation instanceof SingleMemberAnnotationExpr) {
-                if (((SingleMemberAnnotationExpr) annotation).getName().getName().equals("Path")) {
-                  methodUrl = ((SingleMemberAnnotationExpr) annotation).getMemberValue().toString().replace("\"", "");
+            if (n.getType() instanceof ReferenceType) {
+              String methodUrl = "";
+              String methodReturnType = ((ClassOrInterfaceType) ((ReferenceType) n.getType()).getType()).getName();
+              List<MethodType> methodTypes = new ArrayList<>();
+              List<AnnotationExpr> anotations = n.getAnnotations();
+              for (AnnotationExpr annotation : anotations) {
+                if (annotation instanceof MarkerAnnotationExpr) {
+                  populateMethodTypes((MarkerAnnotationExpr) annotation, methodTypes);
+                } else if (annotation instanceof SingleMemberAnnotationExpr) {
+                  if (((SingleMemberAnnotationExpr) annotation).getName().getName().equals("Path")) {
+                    methodUrl = ((StringLiteralExpr) ((SingleMemberAnnotationExpr) annotation).getMemberValue())
+                        .getValue();
+                  }
                 }
               }
-            }
-            for (MethodType methodType : methodTypes) {
-              ServiceBlueprint blueprint = new ServiceBlueprint(methodUrl, "", fetchMethodInputs(n.getParameters()),
-                  new RequestHandler(n.getName(), methodType), null);
-              blueprints.add(blueprint);
+              for (MethodType methodType : methodTypes) {
+                ServiceBlueprint blueprint = new ServiceBlueprint(methodUrl, methodReturnType, "",
+                    fetchMethodInputs(n.getParameters()), new RequestHandler(n.getName(), methodType), null);
+                blueprints.add(blueprint);
+              }
             }
           }
         }.visit(JavaParser.parse(file), null);
@@ -113,8 +119,12 @@ public class ServiceExtractor {
       if (param.getAnnotations().size() > 0) {
         AnnotationExpr an = param.getAnnotations().get(0);
         l.add(new InputParam(param.getId().getName(),
-            ((SingleMemberAnnotationExpr) an).getMemberValue().toString().replace("\"", ""),
+            ((StringLiteralExpr) ((SingleMemberAnnotationExpr) an).getMemberValue()).getValue(),
+            ((ClassOrInterfaceType) ((ReferenceType) param.getType()).getType()).getName(),
             ParamType.getEnum(an.getName().getName())));
+      } else {
+        l.add(new InputParam(param.getId().getName(), param.getId().getName(),
+            ((ClassOrInterfaceType) ((ReferenceType) param.getType()).getType()).getName(), ParamType.BODY));
       }
     }
     return l;
