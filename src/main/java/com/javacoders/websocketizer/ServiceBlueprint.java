@@ -12,6 +12,7 @@ public class ServiceBlueprint {
   private String url;
   private String name;
   private String retutnType;
+  private String packge;
   private List<InputParam> inputs;
   private RequestHandler requestHandler;
   private RequestContext requestContext;
@@ -41,6 +42,14 @@ public class ServiceBlueprint {
 
   public void setRetutnType(String retutnType) {
     this.retutnType = retutnType;
+  }
+  
+  public String getPackge() {
+    return packge;
+  }
+
+  public void setPackge(String packge) {
+    this.packge = packge;
   }
 
   public String getName() {

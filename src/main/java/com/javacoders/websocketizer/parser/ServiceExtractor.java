@@ -62,6 +62,7 @@ public class ServiceExtractor {
               for (ServiceBlueprint blueprint : blueprints) {
                 blueprint.setUrl(serviceUrl + blueprint.getUrl());
                 blueprint.setName(n.getName());
+                blueprint.setPackge(packageName);
                 blueprint.setRequestContext(new RequestContext(packageName + "." + n.getName()));
                 result.add(blueprint);
               }

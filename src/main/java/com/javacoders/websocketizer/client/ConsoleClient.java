@@ -1,6 +1,7 @@
 package com.javacoders.websocketizer.client;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 
 import com.javacoders.websocketizer.ServiceBlueprint;
@@ -27,7 +28,11 @@ public class ConsoleClient {
 			ServiceExtractor extractor = new ServiceExtractor();
 			Collection<ServiceBlueprint> blueprints = extractor.extractBlueprints(projectDir);
 			for (ServiceBlueprint sb : blueprints)
-				CodeGenerator.generate(sb);
+        try {
+          CodeGenerator.generate(sb);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
 		} else {
 			System.out.println("Please enter a valid ");
 		}
