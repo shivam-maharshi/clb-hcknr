@@ -14,6 +14,7 @@ import javax.websocket.server.ServerEndpoint;
 import javax.ws.rs.core.Response;
 
 import com.javacoders.websocketizer.InputParam;
+import com.javacoders.websocketizer.ParamType;
 import com.javacoders.websocketizer.ServiceBlueprint;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
@@ -85,6 +86,7 @@ public class CodeGenerator {
   }
   
   private static MethodSpec constructOnMessageMethod(ServiceBlueprint sb) {
+     
      Builder methodBuilder = MethodSpec
          .methodBuilder("onMessage").addAnnotation(OnMessage.class)
         .addException(IOException.class)
@@ -93,7 +95,7 @@ public class CodeGenerator {
         .addException(InstantiationException.class)
         .addException(IllegalAccessException.class)
         .addParameter(String.class, "message")
-        .addStatement("$T<Object> params = $T.parseMessage(message)", List.class, Util.class);
+        .addStatement("$T<Object> params = $T.parseMessage(message, " + getRequestBodyClass(sb) + ")", List.class, Util.class);
         
      addParametersDefinitionToBuilder(sb, methodBuilder);
      
@@ -104,6 +106,18 @@ public class CodeGenerator {
         .addParameter(Session.class, "session");
         
      return methodBuilder.build();
+  }
+  
+  private static String getRequestBodyClass (ServiceBlueprint sb) {
+    String cls = "Void";
+    List<InputParam> params = sb.getInputs();
+    for (InputParam param : params) {
+      if (param.getType().equals(ParamType.BODY)) {
+        cls = param.getDataType();
+        break;
+      }
+    }
+    return cls;
   }
   
   public static void addParametersDefinitionToBuilder(ServiceBlueprint sb, Builder methodBuilder) {
@@ -144,6 +158,7 @@ public class CodeGenerator {
         .addModifiers(Modifier.PUBLIC)
         .returns(void.class)
         .addParameter(CloseReason.class, "reason")
+        .addStatement("session.close()")
         .addStatement("$T.out.println($S)", System.class, "WebSocket Closed!")
         .addParameter(Session.class, "session")
         .build();
