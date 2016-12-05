@@ -29,7 +29,7 @@ public class ConsoleClient {
 			Collection<ServiceBlueprint> blueprints = extractor.extractBlueprints(projectDir);
 			for (ServiceBlueprint sb : blueprints)
         try {
-          CodeGenerator.generate(sb);
+          CodeGenerator.generate(sb, projectDir);
         } catch (IOException e) {
           e.printStackTrace();
         }

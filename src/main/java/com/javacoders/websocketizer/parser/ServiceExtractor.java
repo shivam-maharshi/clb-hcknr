@@ -43,7 +43,6 @@ public class ServiceExtractor {
     final List<ServiceBlueprint> result = new ArrayList<>();
 
     new DirExplorer((level, path, file) -> path.endsWith(".java"), (level, path, file) -> {
-      System.out.println(path);
       try {
         new VoidVisitorAdapter<Object>() {
           private boolean isRestService = false;
@@ -64,6 +63,7 @@ public class ServiceExtractor {
                 blueprint.setName(n.getName());
                 blueprint.setPackge(packageName);
                 blueprint.setRequestContext(new RequestContext(packageName + "." + n.getName()));
+                blueprint.setFilepath(path);
                 result.add(blueprint);
               }
             }
@@ -94,7 +94,7 @@ public class ServiceExtractor {
                 }
               }
               for (MethodType methodType : methodTypes) {
-                ServiceBlueprint blueprint = new ServiceBlueprint(methodUrl, methodReturnType, "",
+                ServiceBlueprint blueprint = new ServiceBlueprint(methodUrl + "/" + methodType.name(), methodReturnType, "",
                     fetchMethodInputs(n.getParameters()), new RequestHandler(n.getName(), methodType), null);
                 blueprints.add(blueprint);
               }

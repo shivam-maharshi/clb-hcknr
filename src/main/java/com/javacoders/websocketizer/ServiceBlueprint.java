@@ -11,8 +11,9 @@ public class ServiceBlueprint {
 
   private String url;
   private String name;
-  private String retutnType;
+  private String returnType;
   private String packge;
+  private String filepath;
   private List<InputParam> inputs;
   private RequestHandler requestHandler;
   private RequestContext requestContext;
@@ -21,7 +22,7 @@ public class ServiceBlueprint {
       RequestContext requestContext) {
     super();
     this.url = url;
-    this.retutnType = returnType;
+    this.returnType = returnType;
     this.name = name;
     this.inputs = inputs;
     this.requestHandler = requestHandler;
@@ -36,12 +37,12 @@ public class ServiceBlueprint {
     this.url = url;
   }
   
-  public String getRetutnType() {
-    return retutnType;
+  public String getReturnType() {
+    return returnType;
   }
 
-  public void setRetutnType(String retutnType) {
-    this.retutnType = retutnType;
+  public void setReturnType(String returnType) {
+    this.returnType = returnType;
   }
   
   public String getPackge() {
@@ -50,6 +51,14 @@ public class ServiceBlueprint {
 
   public void setPackge(String packge) {
     this.packge = packge;
+  }
+  
+  public String getFilepath() {
+    return filepath;
+  }
+
+  public void setFilepath(String filepath) {
+    this.filepath = filepath;
   }
 
   public String getName() {
