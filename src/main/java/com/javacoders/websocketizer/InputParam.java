@@ -7,14 +7,26 @@ package com.javacoders.websocketizer;
  */
 public class InputParam {
 
+  // Used as the URL parameter identification.
+  private String id;
+  // Used as the method variable name identifier. 
 	private String name;
 	private ParamType type;
 
-	public InputParam(String name, ParamType type) {
+	public InputParam(String id, String name, ParamType type) {
 		super();
+		this.id = id;
 		this.name = name;
 		this.type = type;
 	}
+	
+	public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
 
 	public String getName() {
 		return name;

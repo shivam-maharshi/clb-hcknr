@@ -7,19 +7,29 @@ package com.javacoders.websocketizer;
  */
 public class RequestHandler {
 
-	private String method;
+  private String method;
+  private MethodType methodType;
 
-	public RequestHandler(String method) {
-		super();
-		this.method = method;
-	}
+  public RequestHandler(String method, MethodType methodType) {
+    super();
+    this.method = method;
+    this.methodType = methodType;
+  }
 
-	public String getMethod() {
-		return method;
-	}
+  public String getMethod() {
+    return method;
+  }
 
-	public void setMethod(String method) {
-		this.method = method;
-	}
+  public void setMethod(String method) {
+    this.method = method;
+  }
+
+  public MethodType getMethodType() {
+    return methodType;
+  }
+
+  public void setMethodType(MethodType methodType) {
+    this.methodType = methodType;
+  }
 
 }

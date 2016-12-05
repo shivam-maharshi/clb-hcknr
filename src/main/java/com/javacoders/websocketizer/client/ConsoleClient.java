@@ -12,7 +12,6 @@ import com.javacoders.websocketizer.parser.ServiceExtractor;
  * be converted into a Web Socket Service.
  * 
  * @author shivam.maharshi
- *
  */
 public class ConsoleClient {
 

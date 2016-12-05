@@ -7,6 +7,21 @@ package com.javacoders.websocketizer;
  */
 public enum ParamType {
   
-  QUERY, SEGMENT, MATRIX;
+  QUERY("QueryParam"), SEGMENT("PathParam"), MATRIX("MatrixParam");
+  
+  String value;
+  
+  ParamType(String value) {
+    this.value = value;
+  }
+  
+  public static ParamType getEnum(String value) {
+    for(ParamType pt : ParamType.values()) {
+      if(pt.value.equalsIgnoreCase(value)) {
+        return pt;
+      }
+    }
+    return null;
+  }
 
 }
