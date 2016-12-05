@@ -7,7 +7,7 @@ package com.javacoders.websocketizer;
  */
 public enum ParamType {
   
-  QUERY("QueryParam"), SEGMENT("PathParam"), MATRIX("MatrixParam");
+  QUERY("QueryParam"), SEGMENT("PathParam"), MATRIX("MatrixParam"), BODY("RequestBody");
   
   String value;
   

@@ -1,6 +1,6 @@
 package com.javacoders.websocketizer;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * Represents a method uniquely identified by a URL.
@@ -9,50 +9,60 @@ import java.util.Collection;
  */
 public class ServiceBlueprint {
 
-	private String url;
-	private Collection<InputParam> inputs;
-	private RequestHandler requestHandler;
-	private RequestContext requestContext;
+  private String url;
+  private String name;
+  private List<InputParam> inputs;
+  private RequestHandler requestHandler;
+  private RequestContext requestContext;
 
-	public ServiceBlueprint(String url, Collection<InputParam> inputs, RequestHandler requestHandler,
-			RequestContext requestContext) {
-		super();
-		this.url = url;
-		this.inputs = inputs;
-		this.requestHandler = requestHandler;
-		this.requestContext = requestContext;
-	}
+  public ServiceBlueprint(String url, String name, List<InputParam> inputs, RequestHandler requestHandler,
+      RequestContext requestContext) {
+    super();
+    this.url = url;
+    this.name = name;
+    this.inputs = inputs;
+    this.requestHandler = requestHandler;
+    this.requestContext = requestContext;
+  }
 
-	public String getUrl() {
-		return url;
-	}
+  public String getUrl() {
+    return url;
+  }
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
+  public void setUrl(String url) {
+    this.url = url;
+  }
 
-	public Collection<InputParam> getInputs() {
-		return inputs;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public void setInputs(Collection<InputParam> inputs) {
-		this.inputs = inputs;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public RequestHandler getRequestHandler() {
-		return requestHandler;
-	}
+  public List<InputParam> getInputs() {
+    return inputs;
+  }
 
-	public void setRequestHandler(RequestHandler requestHandler) {
-		this.requestHandler = requestHandler;
-	}
+  public void setInputs(List<InputParam> inputs) {
+    this.inputs = inputs;
+  }
 
-	public RequestContext getRequestContext() {
-		return requestContext;
-	}
+  public RequestHandler getRequestHandler() {
+    return requestHandler;
+  }
 
-	public void setRequestContext(RequestContext requestContext) {
-		this.requestContext = requestContext;
-	}
+  public void setRequestHandler(RequestHandler requestHandler) {
+    this.requestHandler = requestHandler;
+  }
+
+  public RequestContext getRequestContext() {
+    return requestContext;
+  }
+
+  public void setRequestContext(RequestContext requestContext) {
+    this.requestContext = requestContext;
+  }
 
 }

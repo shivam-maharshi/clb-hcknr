@@ -45,8 +45,8 @@ public class ServiceExtractor {
       try {
         new VoidVisitorAdapter<Object>() {
           private boolean isRestService = false;
-          private String serviceUrl;
           private String packageName;
+          private String serviceUrl;
 
           Collection<ServiceBlueprint> blueprints = new ArrayList<>();
 
@@ -59,6 +59,7 @@ public class ServiceExtractor {
               serviceUrl = extractFilePath(pathAnnotation.get());
               for (ServiceBlueprint blueprint : blueprints) {
                 blueprint.setUrl(serviceUrl + blueprint.getUrl());
+                blueprint.setName(n.getName());
                 blueprint.setRequestContext(new RequestContext(packageName + "." + n.getName()));
                 result.add(blueprint);
               }
@@ -74,21 +75,23 @@ public class ServiceExtractor {
           @Override
           public void visit(MethodDeclaration n, Object arg) {
             super.visit(n, arg);
-            String httpMethod = "GET";
             String methodUrl = "";
+            List<MethodType> methodTypes = new ArrayList<>();
             List<AnnotationExpr> anotations = n.getAnnotations();
             for (AnnotationExpr annotation : anotations) {
               if (annotation instanceof MarkerAnnotationExpr) {
-                httpMethod = ((MarkerAnnotationExpr) annotation).getName().getName();
+                populateMethodTypes((MarkerAnnotationExpr) annotation, methodTypes);
               } else if (annotation instanceof SingleMemberAnnotationExpr) {
                 if (((SingleMemberAnnotationExpr) annotation).getName().getName().equals("Path")) {
                   methodUrl = ((SingleMemberAnnotationExpr) annotation).getMemberValue().toString().replace("\"", "");
                 }
               }
             }
-            ServiceBlueprint blueprint = new ServiceBlueprint(methodUrl, fetchMethodInputs(n.getParameters()),
-                new RequestHandler(n.getName(), MethodType.valueOf(httpMethod)), null);
-            blueprints.add(blueprint);
+            for (MethodType methodType : methodTypes) {
+              ServiceBlueprint blueprint = new ServiceBlueprint(methodUrl, "", fetchMethodInputs(n.getParameters()),
+                  new RequestHandler(n.getName(), methodType), null);
+              blueprints.add(blueprint);
+            }
           }
         }.visit(JavaParser.parse(file), null);
       } catch (ParseException | IOException e) {
@@ -96,6 +99,12 @@ public class ServiceExtractor {
       }
     }).explore(projectDir);
     return result;
+  }
+
+  private void populateMethodTypes(MarkerAnnotationExpr annotation, List<MethodType> httpMethods) {
+    if (MethodType.getEnum(annotation.getName().getName()) != null) {
+      httpMethods.add(MethodType.getEnum(annotation.getName().getName()));
+    }
   }
 
   private List<InputParam> fetchMethodInputs(List<Parameter> params) {
