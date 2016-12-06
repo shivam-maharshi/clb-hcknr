@@ -24,6 +24,7 @@ import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
 import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.ReferenceType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.javacoders.websocketizer.*;
@@ -104,7 +105,6 @@ public class ServiceExtractor {
             super.visit(n, arg);
             if (n.getType() instanceof ReferenceType) {
               String methodUrl = "";
-              String methodReturnType = ((ClassOrInterfaceType) ((ReferenceType) n.getType()).getType()).getName();
               List<MethodType> methodTypes = new ArrayList<>();
               List<AnnotationExpr> anotations = n.getAnnotations();
               for (AnnotationExpr annotation : anotations) {
@@ -118,7 +118,7 @@ public class ServiceExtractor {
                 }
               }
               for (MethodType methodType : methodTypes) {
-                ServiceBlueprint blueprint = new ServiceBlueprint(methodUrl + "/" + methodType.name(), methodReturnType, "",
+                ServiceBlueprint blueprint = new ServiceBlueprint(methodUrl + "/" + methodType.name(), "",
                     fetchMethodInputs(n.getParameters()), new RequestHandler(n.getName(), methodType), null);
                 blueprints.add(blueprint);
               }
@@ -126,7 +126,7 @@ public class ServiceExtractor {
           }
         }.visit(JavaParser.parse(file), null);
       } catch (ParseException | IOException e) {
-        new RuntimeException(e);
+        // Do Nothing
       }
     }).explore(projectDir);
     return result;
@@ -143,13 +143,27 @@ public class ServiceExtractor {
     for (Parameter param : params) {
       if (param.getAnnotations().size() > 0) {
         AnnotationExpr an = param.getAnnotations().get(0);
-        l.add(new InputParam(param.getId().getName(),
-            ((StringLiteralExpr) ((SingleMemberAnnotationExpr) an).getMemberValue()).getValue(),
-            ((ClassOrInterfaceType) ((ReferenceType) param.getType()).getType()).getName(),
-            ParamType.getEnum(an.getName().getName())));
+        if (an instanceof SingleMemberAnnotationExpr && ((SingleMemberAnnotationExpr) an).getMemberValue() instanceof StringLiteralExpr) {
+        if (param.getType() instanceof PrimitiveType) {
+          l.add(new InputParam(param.getId().getName(),
+              ((StringLiteralExpr) ((SingleMemberAnnotationExpr) an).getMemberValue()).getValue(),
+              ((PrimitiveType) param.getType()).getType().name(),
+              ParamType.getEnum(an.getName().getName())));
+        } else if (param.getType() instanceof ReferenceType) {
+          l.add(new InputParam(param.getId().getName(),
+              ((StringLiteralExpr) ((SingleMemberAnnotationExpr) an).getMemberValue()).getValue(),
+              ((ClassOrInterfaceType) ((ReferenceType) param.getType()).getType()).getName(),
+              ParamType.getEnum(an.getName().getName())));  
+        }
+        }
       } else {
+        if (param.getType() instanceof PrimitiveType) {
         l.add(new InputParam(param.getId().getName(), param.getId().getName(),
-            ((ClassOrInterfaceType) ((ReferenceType) param.getType()).getType()).getName(), ParamType.BODY));
+            ((PrimitiveType) param.getType()).getType().name(), ParamType.BODY));
+        } else if (param.getType() instanceof ReferenceType) {
+          l.add(new InputParam(param.getId().getName(), param.getId().getName(),
+              ((ClassOrInterfaceType) ((ReferenceType) param.getType()).getType()).getName(), ParamType.BODY));
+        }
       }
     }
     return l;

@@ -11,7 +11,6 @@ public class ServiceBlueprint {
 
   private String url;
   private String name;
-  private String returnType;
   private String packge;
   private String srcDirPath;
   private String autogenPath;
@@ -20,11 +19,10 @@ public class ServiceBlueprint {
   private RequestHandler requestHandler;
   private RequestContext requestContext;
 
-  public ServiceBlueprint(String url, String returnType, String name, List<InputParam> inputs, RequestHandler requestHandler,
+  public ServiceBlueprint(String url, String name, List<InputParam> inputs, RequestHandler requestHandler,
       RequestContext requestContext) {
     super();
     this.url = url;
-    this.returnType = returnType;
     this.name = name;
     this.inputs = inputs;
     this.requestHandler = requestHandler;
@@ -37,14 +35,6 @@ public class ServiceBlueprint {
 
   public void setUrl(String url) {
     this.url = url;
-  }
-  
-  public String getReturnType() {
-    return returnType;
-  }
-
-  public void setReturnType(String returnType) {
-    this.returnType = returnType;
   }
   
   public String getPackge() {

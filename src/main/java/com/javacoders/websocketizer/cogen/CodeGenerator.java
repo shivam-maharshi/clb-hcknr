@@ -41,7 +41,9 @@ public class CodeGenerator {
   
   public static final String WS_REQUEST = "import java.util.HashMap; public class WSRequest<T> { HashMap<String, String> path; HashMap<String, String> query; HashMap<String, String> matrix; T body; public HashMap<String, String> getPath() { return path; } public void setPath(HashMap<String, String> path) { this.path = path; } public HashMap<String, String> getQuery() { return query; } public void setQuery(HashMap<String, String> query) { this.query = query; } public HashMap<String, String> getMatrix() { return matrix; } public void setMatrix(HashMap<String, String> matrix) { this.matrix = matrix; } public T getBody() { return body; } public void setBody(T body) { this.body = body; } }";
   public static final String UTIL = "import java.util.ArrayList; import java.util.HashMap; import java.util.List;import com.google.gson.Gson;public class Util { public static <T> List<Object> parseMessage(String message, Class T) { WSRequest<T> request = new Gson().fromJson(message, WSRequest.class); List<Object> params = new ArrayList<Object>(); HashMap<String, String> path = request.getPath(); for (String key : path.keySet()) params.add(path.get(key)); HashMap<String, String> query = request.getQuery(); for (String key : query.keySet()) params.add(query.get(key)); HashMap<String, String> matrix = request.getMatrix(); for (String key : matrix.keySet()) params.add(matrix.get(key)); if (T != Void.class) { params.add(request.getBody()); } return params; } public static String getJson(Object obj) { return new Gson().toJson(obj); }}";
-
+  public static int incorrect = 0;
+  public static int correct = 0;
+  
   /**
    * Takes a {@link ServiceBlueprint} created by PI after parsing the web
    * service to be automatically converted into Web Socket service.
@@ -50,6 +52,7 @@ public class CodeGenerator {
    * @throws IOException 
    */
   public static void generate(ServiceBlueprint sb, File dir) throws IOException {
+    try {
     MethodSpec onOpen = constructOnOpenMethod();
     MethodSpec onMessage = constructOnMessageMethod(sb);
     MethodSpec onClose = constructOnCloseMethod();
@@ -58,8 +61,15 @@ public class CodeGenerator {
         .build();
     
     file.writeTo(new File(sb.getSrcDirPath()));
+    System.out.println(sb.getAutogenPath());
     createFrameworkFile(WS_REQUEST, "WSRequest.java", sb.getPackge(), sb.getAutogenPath());
     createFrameworkFile(UTIL, "Util.java", sb.getPackge(), sb.getAutogenPath());
+    correct++;
+    System.out.println("Correct Blueprint: " + correct);
+    } catch (NullPointerException e) {
+      incorrect++;
+      System.out.println("Incorrect Blueprint: " + incorrect);
+    }
   }
   
   private static void createFrameworkFile(String content, String name, String packge, String path) throws IOException {
