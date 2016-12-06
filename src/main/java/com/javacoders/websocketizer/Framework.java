@@ -7,6 +7,6 @@ package com.javacoders.websocketizer;
  */
 public enum Framework {
   
-  DEFAULT, SPRING;
+  DEFAULT, SPRING, EJB;
 
 }

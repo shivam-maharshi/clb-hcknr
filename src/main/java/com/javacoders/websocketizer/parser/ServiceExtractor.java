@@ -26,12 +26,7 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.ReferenceType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import com.javacoders.websocketizer.InputParam;
-import com.javacoders.websocketizer.MethodType;
-import com.javacoders.websocketizer.ParamType;
-import com.javacoders.websocketizer.RequestContext;
-import com.javacoders.websocketizer.RequestHandler;
-import com.javacoders.websocketizer.ServiceBlueprint;
+import com.javacoders.websocketizer.*;
 
 /**
  * This class is responsible for extracting the key service HTTP interface
@@ -41,6 +36,7 @@ import com.javacoders.websocketizer.ServiceBlueprint;
  * @author shivam.maharshi
  */
 public class ServiceExtractor {
+  private static final String SPRING = "org.springframework";
 
   public Collection<ServiceBlueprint> extractBlueprints(File projectDir) {
     final List<ServiceBlueprint> result = new ArrayList<>();
@@ -90,12 +86,14 @@ public class ServiceExtractor {
           public void visit(CompilationUnit n, Object arg) {
             super.visit(n, arg);
             for (ImportDeclaration declaration : n.getImports()) {
-              String[] parts = declaration.getName().toString().split("\\.");
+              String imp = declaration.getName().toString();
+              String[] parts = imp.split("\\.");
               for (ServiceBlueprint blueprint : blueprints) {
+                blueprint.setFramework(imp.contains(SPRING) ? Framework.SPRING : Framework.DEFAULT);
                 for (InputParam param : blueprint.getInputs()) {
                   String name = param.getDataType();
                   if (parts[parts.length - 1].equals(name))
-                    param.setDataType(declaration.getName().toString());
+                    param.setDataType(imp);
                 }
               }
             }
