@@ -7,8 +7,8 @@ import java.util.List;
 import com.google.gson.Gson;
 
 /**
- * Hold the utils methods.
- * 
+ * Class that holds the common util methods.
+ *  
  * @author shivam.maharshi
  */
 public class Util {
