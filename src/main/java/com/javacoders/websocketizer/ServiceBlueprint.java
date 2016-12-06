@@ -13,7 +13,8 @@ public class ServiceBlueprint {
   private String name;
   private String returnType;
   private String packge;
-  private String filepath;
+  private String srcDirPath;
+  private String autogenPath;
   private Framework framework;
   private List<InputParam> inputs;
   private RequestHandler requestHandler;
@@ -62,12 +63,20 @@ public class ServiceBlueprint {
     this.framework = framework;
   }
 
-  public String getFilepath() {
-    return filepath;
+  public String getSrcDirPath() {
+    return srcDirPath;
   }
 
-  public void setFilepath(String filepath) {
-    this.filepath = filepath;
+  public void setSrcDirPath(String srcDirPath) {
+    this.srcDirPath = srcDirPath;
+  }
+
+  public String getAutogenPath() {
+    return autogenPath;
+  }
+
+  public void setAutogenPath(String autogenPath) {
+    this.autogenPath = autogenPath;
   }
 
   public String getName() {

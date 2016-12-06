@@ -68,11 +68,13 @@ public class ServiceExtractor {
                 blueprint.setRequestContext(new RequestContext(packageName + "." + n.getName()));
                 String pattern = Pattern.quote(System.getProperty("file.separator"));
                 String[] pathSeg = file.getPath().split(pattern);
-                String filepath = "";
+                String autoGenPath = "";
                 for (int i=0; i<pathSeg.length-1; i++) {
-                  filepath += pathSeg[i] +"/";
+                  autoGenPath += pathSeg[i] +"/";
                 }
-                blueprint.setFilepath(filepath);
+                blueprint.setAutogenPath(autoGenPath);
+                pattern = Pattern.quote(System.getProperty("file.separator")+ "src");
+                blueprint.setSrcDirPath(file.getPath().split(pattern)[0] + "/src/main/java/");
                 result.add(blueprint);
               }
             }
