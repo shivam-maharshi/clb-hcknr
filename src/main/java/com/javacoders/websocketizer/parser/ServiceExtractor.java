@@ -11,6 +11,8 @@ import javax.ws.rs.Path;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -76,6 +78,21 @@ public class ServiceExtractor {
           }
 
           @Override
+          public void visit(CompilationUnit n, Object arg) {
+            super.visit(n, arg);
+            for (ImportDeclaration declaration : n.getImports()) {
+              String[] parts = declaration.getName().toString().split("\\.");
+              for (ServiceBlueprint blueprint : blueprints) {
+                for (InputParam param : blueprint.getInputs()) {
+                  String name = param.getDataType();
+                  if (parts[parts.length - 1].equals(name))
+                    param.setDataType(declaration.getName().toString());
+                }
+              }
+            }
+          }
+
+          @Override
           public void visit(MethodDeclaration n, Object arg) {
             super.visit(n, arg);
             if (n.getType() instanceof ReferenceType) {
@@ -87,7 +104,7 @@ public class ServiceExtractor {
                 if (annotation instanceof MarkerAnnotationExpr) {
                   populateMethodTypes((MarkerAnnotationExpr) annotation, methodTypes);
                 } else if (annotation instanceof SingleMemberAnnotationExpr) {
-                  if (((SingleMemberAnnotationExpr) annotation).getName().getName().equals("Path")) {
+                  if (annotation.getName().getName().equals("Path")) {
                     methodUrl = ((StringLiteralExpr) ((SingleMemberAnnotationExpr) annotation).getMemberValue())
                         .getValue();
                   }
