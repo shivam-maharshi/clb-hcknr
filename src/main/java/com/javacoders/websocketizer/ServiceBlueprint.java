@@ -14,6 +14,7 @@ public class ServiceBlueprint {
   private String returnType;
   private String packge;
   private String filepath;
+  private Framework framework;
   private List<InputParam> inputs;
   private RequestHandler requestHandler;
   private RequestContext requestContext;
@@ -53,6 +54,14 @@ public class ServiceBlueprint {
     this.packge = packge;
   }
   
+  public Framework getFramework() {
+    return framework;
+  }
+
+  public void setFramework(Framework framework) {
+    this.framework = framework;
+  }
+
   public String getFilepath() {
     return filepath;
   }
