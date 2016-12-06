@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.Path;
 
@@ -65,7 +66,13 @@ public class ServiceExtractor {
                 blueprint.setName(n.getName());
                 blueprint.setPackge(packageName);
                 blueprint.setRequestContext(new RequestContext(packageName + "." + n.getName()));
-                blueprint.setFilepath(path);
+                String pattern = Pattern.quote(System.getProperty("file.separator"));
+                String[] pathSeg = file.getPath().split(pattern);
+                String filepath = "";
+                for (int i=0; i<pathSeg.length-1; i++) {
+                  filepath += pathSeg[i] +"/";
+                }
+                blueprint.setFilepath(filepath);
                 result.add(blueprint);
               }
             }
