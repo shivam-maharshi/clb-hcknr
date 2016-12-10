@@ -1,6 +1,5 @@
 package com.javacoders.websocketizer.cogen;
 
-import java.io.File;
 import java.io.IOException;
 
 import com.javacoders.websocketizer.ServiceBlueprint;
@@ -22,8 +21,7 @@ public interface CodeGenerator {
    * service to be automatically converted into Web Socket service.
    * 
    * @param sb
-   * @throws IOException
    */
-  public void generate(ServiceBlueprint sb, File dir);
+  public void generate(ServiceBlueprint sb);
 
 }

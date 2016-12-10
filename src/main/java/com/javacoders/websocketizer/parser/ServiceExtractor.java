@@ -11,7 +11,7 @@ import com.javacoders.websocketizer.ServiceBlueprint;
  * 
  * @author shivam.maharshi
  */
-public interface ServiceExtractor<K> {
+public interface ServiceExtractor<K extends ServiceBlueprint> {
 
   public Collection<K> extractBlueprints(File projectDir);
 

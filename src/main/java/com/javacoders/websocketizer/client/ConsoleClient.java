@@ -35,7 +35,7 @@ public class ConsoleClient {
         for (RestServiceBlueprint sb : blueprints)
           try {
             if (to == ServiceType.WS)
-              new WSCodeGenerator().generate(sb, projectDir);
+              new WSCodeGenerator().generate(sb);
           } catch (RuntimeException e) {
             System.out.println(String.format("[SourceDir: %s, PackageName: %s, ClassName: %s, Exception: %s] ",
                 sb.getSourceDir(), sb.getPackageName(), sb.getClassName(), e.getMessage()));

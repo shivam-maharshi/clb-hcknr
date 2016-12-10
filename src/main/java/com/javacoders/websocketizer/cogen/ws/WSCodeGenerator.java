@@ -54,7 +54,7 @@ public class WSCodeGenerator implements CodeGenerator {
    * @throws IOException 
    */
   @Override
-  public void generate(ServiceBlueprint serviceBlueprint, File dir) {
+  public void generate(ServiceBlueprint serviceBlueprint) {
     try {
     RestServiceBlueprint sb = (RestServiceBlueprint)serviceBlueprint;
     MethodSpec onOpen = constructOnOpenMethod();
