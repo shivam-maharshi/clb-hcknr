@@ -22,8 +22,8 @@ public interface CodeGenerator {
    * service to be automatically converted into Web Socket service.
    * 
    * @param sb
-   * @throws IOException 
+   * @throws IOException
    */
-  public void generate(ServiceBlueprint sb, File dir) throws IOException;
+  public void generate(ServiceBlueprint sb, File dir);
 
 }

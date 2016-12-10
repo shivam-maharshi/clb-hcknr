@@ -1,7 +1,6 @@
 package com.javacoders.websocketizer.client;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collection;
 
 import com.javacoders.websocketizer.ServiceType;
@@ -37,7 +36,7 @@ public class ConsoleClient {
           try {
             if (to == ServiceType.WS)
               new WSCodeGenerator().generate(sb, projectDir);
-          } catch (IOException e) {
+          } catch (RuntimeException e) {
             System.out.println(String.format("[SourceDir: %s, PackageName: %s, ClassName: %s, Exception: %s] ",
                 sb.getSourceDir(), sb.getPackageName(), sb.getClassName(), e.getMessage()));
           }

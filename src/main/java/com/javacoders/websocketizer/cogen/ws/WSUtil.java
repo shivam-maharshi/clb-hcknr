@@ -11,7 +11,7 @@ import com.google.gson.Gson;
  *  
  * @author shivam.maharshi
  */
-public class Util {
+public class WSUtil {
 
   public static <T> List<Object> parseMessage(String message, Class T) {
     WSRequest<T> request = new Gson().fromJson(message, WSRequest.class);

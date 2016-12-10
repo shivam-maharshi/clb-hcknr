@@ -3,11 +3,12 @@ package com.javacoders.websocketizer.parser;
 import java.io.File;
 import java.util.Collection;
 
+import com.javacoders.websocketizer.ServiceBlueprint;
+
 /**
- * This class is responsible for extracting the key service HTTP interface
- * definition information from a JAX-RS application.
+ * This interface is responsible for extracting the {@link ServiceBlueprint}
+ * from the input service.
  * 
- * @author dedocibula
  * @author shivam.maharshi
  */
 public interface ServiceExtractor<K> {
