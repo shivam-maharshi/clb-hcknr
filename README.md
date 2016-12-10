@@ -15,6 +15,6 @@ WebSocketizer - a tool for automatically refactoring RESTFul HTTP web service to
 
 ## Run
 
-* `java -cp {$WEBSOCKETIZER_BASE_PATH}\build\libs\WebSocketizer-1.0.jar com.javacoders.websocketizer.client.ConsoleClient --input={$PROJECT_BASE_PATH}`
+* `java -cp {$WEBSOCKETIZER_BASE_PATH}\build\libs\WebSocketizer-1.0.jar com.javacoders.websocketizer.client.ConsoleClient --from=REST --to=WS --input={$PROJECT_BASE_PATH}`
 
-* `Sample Command: java -cp C:\Sam\Work\WorkSpace\WebSocketizer\build\libs\WebSocketizer-1.0.jar com.javacoders.websocketizer.client.ConsoleClient --input=C:\Sam\Work\WorkSpace\WebSocketizer\src\main\java\com\javacoders\service\rs`
+* `Sample Command: java -cp C:\Sam\Work\WorkSpace\WebSocketizer\build\libs\WebSocketizer-1.0.jar com.javacoders.websocketizer.client.ConsoleClient --from=REST --to=WS --input=C:\Sam\Work\WorkSpace\WebSocketizer\src\main\java\com\javacoders\service\rs`
