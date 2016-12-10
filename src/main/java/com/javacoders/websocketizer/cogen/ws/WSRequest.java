@@ -1,4 +1,4 @@
-package com.javacoders.websocketizer.cogen;
+package com.javacoders.websocketizer.cogen.ws;
 
 import java.util.HashMap;
 
