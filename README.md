@@ -1,2 +1,2 @@
-# hckn-resrch
+# clb-hcknr
 This is a compilation of a few novel research &amp; innovative projects acomplished individually and in collaboration with others.
