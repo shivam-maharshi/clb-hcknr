@@ -1,0 +1,1 @@
+hbase-indexer add-indexer --name Indexer2 --indexer-conf /home/cs5604s16_so/ideal-cs5604s16_comb/morphline-hbase-mapper.xml -cp solr.zk=solr2.dlrl:2181,node2.dlrl:2181,node3.dlrl:2181,node1.dlrl:2181,node4.dlrl:2181/solr -cp solr.collection=ideal-cs5604s16_comb --zookeeper solr2.dlrl:2181,node2.dlrl:2181,node3.dlrl:2181,node1.dlrl:2181,node4.dlrl:2181/solr
