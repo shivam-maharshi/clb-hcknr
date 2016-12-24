@@ -1,4 +1,0 @@
-Total Pages: 400,000
-
-Simple Brute Force: 221 (mins), Failed: 90,000
-Pages: 828,440, Data Size: 1.9 GB
