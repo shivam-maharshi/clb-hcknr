@@ -1,1 +1,0 @@
-php /var/www/wiki/maintenance/install.php --dbname wiki --dbserver 127.0.0.1 --dbtype mysql --dbuser root --email shivam.maharshi@gmail.com --pass "shivam123" --installdbuser root --scriptpath /wiki --admin shivam
