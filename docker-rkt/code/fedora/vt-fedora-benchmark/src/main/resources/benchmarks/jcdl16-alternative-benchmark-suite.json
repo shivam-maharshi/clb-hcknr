@@ -1,0 +1,24 @@
+{
+  "benchmarks": [
+    {
+      "worker_counts": [ 1 ],
+      "steps": [ "run_experiment1", "run_experiment2", "run_experiment3" ]
+    },
+    {
+      "worker_counts": [ 2 ],
+      "steps": [ "run_experiment1", "run_experiment2", "run_experiment3" ]
+    },
+    {
+      "worker_counts": [ 4 ],
+      "steps": [ "run_experiment1", "run_experiment2", "run_experiment3" ]
+    },
+    {
+      "worker_counts": [ 8 ],
+      "steps": [ "run_experiment1", "run_experiment2", "run_experiment3" ]
+    },
+    {
+      "worker_counts": [ 16 ],
+      "steps": [ "run_experiment1", "run_experiment2", "run_experiment3" ]
+    }
+  ]
+}
