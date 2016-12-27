@@ -1,7 +1,7 @@
 # Colaborative Hack & Research
 [![Build Status](https://travis-ci.org/shivam-maharshi/Algorithms.svg?branch=master)](https://travis-ci.org/shivam-maharshi/Algorithms)
 
-This is a compilation of a few novel research ideas, innovative projects, hackathon ideas & open source contributions designed and implemented by me in collaboration with others for research & learning. _**Feel free to fork, copy, suggest corrections or ask questions. Happy hacking :)**
+This is a compilation of a few novel research ideas, innovative projects, hackathon ideas & open source contributions designed and implemented by me in collaboration with others for research & learning. _**Feel free to fork, copy, suggest corrections or ask questions. Happy hacking :)**_
 
 # Contents
 * [Docker v/s Rkt] (https://github.com/shivam-maharshi/clb-hcknr/tree/master/docker-rkt)
